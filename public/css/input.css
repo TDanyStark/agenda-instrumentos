@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'inter';
+  src: url('/fonts/inter.woff2') format('woff2'),
+       url('/fonts/inter.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #2D3748;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #2D3748;
+  border-radius: 25px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #2D3748;
+  border-radius: 14px;
+  border: 1px solid #2D3748;
+}
