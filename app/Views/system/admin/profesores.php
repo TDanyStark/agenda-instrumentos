@@ -345,57 +345,53 @@
 </section>
 
 <script>
-
-
   document.addEventListener("DOMContentLoaded", function() {
     const openModal = document.getElementById('openModal');
-  const closeModal = document.getElementById('closeModal');
-  const btnCancelar = document.getElementById('btn-cancelar');
-  const modalAdd = document.getElementById('modal-add');
-  const contenedorPopup = document.getElementById('contenedor-popup');
+    const closeModal = document.getElementById('closeModal');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const modalAdd = document.getElementById('modal-add');
+    const contenedorPopup = document.getElementById('contenedor-popup');
 
-  const changeModalState = () => {
-    modalAdd.classList.toggle('flex');
-    modalAdd.classList.toggle('hidden');
-  }
-
-  <?php if ($modal) : ?>
-    changeModalState();
-  <?php endif; ?>
-
-  openModal.addEventListener('click', changeModalState);
-
-  closeModal.addEventListener('click', changeModalState);
-
-  btnCancelar.addEventListener('click', changeModalState);
-
-  modalAdd.addEventListener('click', function(e) {
-    if (selectActive){
-      deleteAllSelectors();
+    const changeModalState = () => {
+      modalAdd.classList.toggle('flex');
+      modalAdd.classList.toggle('hidden');
     }
-    if (!contenedorPopup.contains(e.target)) {
+
+    <?php if ($modal) : ?>
       changeModalState();
-    }
-  });
+    <?php endif; ?>
 
+    openModal.addEventListener('click', changeModalState);
 
+    closeModal.addEventListener('click', changeModalState);
 
+    btnCancelar.addEventListener('click', changeModalState);
 
-  // select salones
-  const selectSalones = document.getElementById('salones');
-  const salonesAgregados = document.getElementById('salones-agregados');
-  selectSalones.addEventListener('change', function() {
-    const option = selectSalones.options[selectSalones.selectedIndex];
-    if (option.value === 'Agregue un salon') return;
-    // validar si ya existe el salon
-    const exists = Array.from(salonesAgregados.children).some(child => {
-      return child.querySelector('span').textContent === option.text;
+    modalAdd.addEventListener('click', function(e) {
+      if (selectActive) {
+        deleteAllSelectors();
+      }
+      if (!contenedorPopup.contains(e.target)) {
+        changeModalState();
+      }
     });
-    if (exists) return;
 
-    const div = document.createElement('div');
-    div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
-    div.innerHTML = `
+
+    // select salones
+    const selectSalones = document.getElementById('salones');
+    const salonesAgregados = document.getElementById('salones-agregados');
+    selectSalones.addEventListener('change', function() {
+      const option = selectSalones.options[selectSalones.selectedIndex];
+      if (option.value === 'Agregue un salon') return;
+      // validar si ya existe el salon
+      const exists = Array.from(salonesAgregados.children).some(child => {
+        return child.querySelector('span').textContent === option.text;
+      });
+      if (exists) return;
+
+      const div = document.createElement('div');
+      div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
+      div.innerHTML = `
       <span class="text-white">${option.text}</span>
       <button class="btn-delete text-red-500 font-medium rounded-lg text-sm p-1 text-center">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30 30" width="24" height="24" class="icon">
@@ -416,33 +412,33 @@
       </svg>
       </button>
     `;
-    salonesAgregados.appendChild(div);
-    selectSalones.value = 'Agregue un salon';
-
-
-    const btnDelete = div.querySelector('.btn-delete');
-    btnDelete.addEventListener('click', function(e) {
-      e.stopPropagation(); // Detiene la propagación del evento de clic
-      div.remove();
+      salonesAgregados.appendChild(div);
       selectSalones.value = 'Agregue un salon';
-    });
-  });
 
-  // select instrumentos
-  const selectInstrumentos = document.getElementById('instrumentos');
-  const instrumentosAgregados = document.getElementById('instrumentos-agregados');
-  selectInstrumentos.addEventListener('change', function() {
-    const option = selectInstrumentos.options[selectInstrumentos.selectedIndex];
-    if (option.value === 'Agregue un instrumento') return;
-    // validar si ya existe el instrumento
-    const exists = Array.from(instrumentosAgregados.children).some(child => {
-      return child.querySelector('span').textContent === option.text;
-    });
-    if (exists) return;
 
-    const div = document.createElement('div');
-    div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
-    div.innerHTML = `
+      const btnDelete = div.querySelector('.btn-delete');
+      btnDelete.addEventListener('click', function(e) {
+        e.stopPropagation(); // Detiene la propagación del evento de clic
+        div.remove();
+        selectSalones.value = 'Agregue un salon';
+      });
+    });
+
+    // select instrumentos
+    const selectInstrumentos = document.getElementById('instrumentos');
+    const instrumentosAgregados = document.getElementById('instrumentos-agregados');
+    selectInstrumentos.addEventListener('change', function() {
+      const option = selectInstrumentos.options[selectInstrumentos.selectedIndex];
+      if (option.value === 'Agregue un instrumento') return;
+      // validar si ya existe el instrumento
+      const exists = Array.from(instrumentosAgregados.children).some(child => {
+        return child.querySelector('span').textContent === option.text;
+      });
+      if (exists) return;
+
+      const div = document.createElement('div');
+      div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
+      div.innerHTML = `
       <span class="text-white">${option.text}</span>
       <button class="btn-delete text-red-500 font-medium rounded-lg text-sm p-1 text-center">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30 30" width="24" height="24" class="icon">
@@ -463,17 +459,17 @@
       </svg>
       </button>
     `;
-    instrumentosAgregados.appendChild(div);
-    selectInstrumentos.value = 'Agregue un instrumento';
-
-
-    const btnDelete = div.querySelector('.btn-delete');
-    btnDelete.addEventListener('click', function(e) {
-      e.stopPropagation(); // Detiene la propagación del evento de clic
-      div.remove();
+      instrumentosAgregados.appendChild(div);
       selectInstrumentos.value = 'Agregue un instrumento';
+
+
+      const btnDelete = div.querySelector('.btn-delete');
+      btnDelete.addEventListener('click', function(e) {
+        e.stopPropagation(); // Detiene la propagación del evento de clic
+        div.remove();
+        selectInstrumentos.value = 'Agregue un instrumento';
+      });
     });
-  });
 
 
     let horasInicioInput = document.querySelectorAll('.hora-inicio');
@@ -510,14 +506,14 @@
 
         // si el input es de hora de fin, no permitir seleccionar horas anteriores a la hora de inicio
         if (container.querySelector('.hora-fin')) {
-            const containerPadre = container.parentElement;
-            const horaInicio = containerPadre.querySelector('.hora-inicio').value;
-            if (horaInicio) {
-              const horaInicioIndex = horas.indexOf(horaInicio);
-              const horaIndex = horas.indexOf(hora);
-              if (horaIndex <= horaInicioIndex) {
-                button.disabled = true;
-                button.classList.add('hidden');
+          const containerPadre = container.parentElement;
+          const horaInicio = containerPadre.querySelector('.hora-inicio').value;
+          if (horaInicio) {
+            const horaInicioIndex = horas.indexOf(horaInicio);
+            const horaIndex = horas.indexOf(hora);
+            if (horaIndex <= horaInicioIndex) {
+              button.disabled = true;
+              button.classList.add('hidden');
             }
           }
         }
@@ -528,15 +524,15 @@
             const horaInicio = horario.querySelector('.hora-inicio').value;
             const horaFin = horario.querySelector('.hora-fin').value;
             if (horaInicio && horaFin) {
-            // deshabilitar todas las horas que estén dentro desde el primer horario hasta el último
-            const horaInicioIndex = horas.indexOf(horaInicio);
-            const horaFinIndex = horas.indexOf(horaFin);
-            const horaIndex = horas.indexOf(hora);
-            if (horaIndex < horaFinIndex) {
-              button.disabled = true;
-              button.classList.add('hidden');
+              // deshabilitar todas las horas que estén dentro desde el primer horario hasta el último
+              const horaInicioIndex = horas.indexOf(horaInicio);
+              const horaFinIndex = horas.indexOf(horaFin);
+              const horaIndex = horas.indexOf(hora);
+              if (horaIndex < horaFinIndex) {
+                button.disabled = true;
+                button.classList.add('hidden');
+              }
             }
-          }
           });
         }
 
@@ -582,16 +578,16 @@
       shelude.addEventListener('click', function(e) {
         e.stopPropagation();
         if (e.target.closest('.btn-close')) {
-            const schedule = e.target.closest('.horario');
-            if (schedule) {
-                schedule.remove();
-            }
+          const schedule = e.target.closest('.horario');
+          if (schedule) {
+            schedule.remove();
+          }
         }
       });
       handlerClickInputs();
     }
 
-    function handlerClickInputs(){
+    function handlerClickInputs() {
       horasInicioInput = document.querySelectorAll('.hora-inicio');
       horasFinInput = document.querySelectorAll('.hora-fin');
       horasInicioInput.forEach(horaInicioInput => {
@@ -647,17 +643,28 @@
         const checkbox = dia.querySelector('input[type="checkbox"]');
         // si el checkbox no está activo, no se toma en cuenta
         if (!checkbox.checked) {
-          return { diaSemana: dia.querySelector('span').textContent, horarios: [], activo: false };
+          return {
+            diaSemana: dia.querySelector('span').textContent,
+            horarios: [],
+            activo: false
+          };
         }
 
         const diaSemana = dia.querySelector('span').textContent;
         const horarios = Array.from(dia.querySelectorAll('.horario')).map(horario => {
-      
+
           const horaInicio = horario.querySelector('.hora-inicio').value;
           const horaFin = horario.querySelector('.hora-fin').value;
-          return { horaInicio, horaFin };
+          return {
+            horaInicio,
+            horaFin
+          };
         });
-        return { diaSemana, horarios, activo: checkbox.checked };
+        return {
+          diaSemana,
+          horarios,
+          activo: checkbox.checked
+        };
       });
 
       dias.forEach(dia => {
@@ -671,7 +678,7 @@
             if (horario.horaInicio >= horario.horaFin) {
               errors.push(`La hora de inicio debe ser menor a la hora de fin para el día ${dia.diaSemana}`);
             }
-            
+
           });
         }
       });
@@ -687,7 +694,13 @@
         return;
       }
 
-      console.log({ nombre, email, salones, instrumentos, dias });
+      console.log({
+        nombre,
+        email,
+        salones,
+        instrumentos,
+        dias
+      });
     });
 
     const btnsDelete = document.querySelectorAll('.btn-delete');
@@ -697,7 +710,7 @@
 
       });
     });
-    
+
 
   });
 </script>

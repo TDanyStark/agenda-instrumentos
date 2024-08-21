@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Models\LoginModel;
 
 class Login extends BaseController
@@ -33,7 +34,19 @@ class Login extends BaseController
 
 		// instance model
 		$model = new LoginModel();
-		$response =	$model->auth($cedula, $password);
+
+		if (!isset($password)) {
+			$isAdmin = $model->validateAdmin($cedula);
+
+			if (!$isAdmin) {
+				$response = $model->authStudent($cedula);
+			}else{
+				return redirect()->back()->withInput()->with('show_password_input', true);
+			}
+		} else {
+			$response =	$model->authAdmin($cedula, $password);
+		}
+
 
 		if (!$response) {
 			return redirect()->back()->withInput()->with('error', 'Cedula, contraseña incorrecta o usuario inactivo, contacte administrador');
@@ -50,7 +63,6 @@ class Login extends BaseController
 		}
 
 		return redirect()->to('/select_shedule');
-	
 	}
 
 	public function logout()

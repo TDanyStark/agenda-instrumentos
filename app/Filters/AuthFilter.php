@@ -27,10 +27,6 @@ class AuthFilter implements FilterInterface
     {
         $session = session();
         if (!$session->has('cedula') || !$session->has('role') || $session->get('role') != 'admin'){
-            // if the user is admin redirect to inicio
-            if ($session->get('role') == 'admin') {
-                return redirect()->to('/inicio');
-            }
             //si existe una sesion activa eliminala
             $session->destroy();
             return redirect()->to('/');

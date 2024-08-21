@@ -1,8 +1,6 @@
 <?= $this->extend('template\main') ?>
 
 <?= $this->section('content') ?>
-<!-- Modal toggle -->
-
 <section class="flex flex-col gap-8 w-full">
     <h1 class="text-white text-6xl font-bold">Cursos</h1>
 
