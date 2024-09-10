@@ -51,11 +51,14 @@ class Login extends BaseController
 		if (!$response) {
 			return redirect()->back()->withInput()->with('error', 'Cedula, contraseña incorrecta o usuario inactivo, contacte administrador');
 		}
-
+		
 		// set session
 		$session = session();
 		$session->set('cedula', $response['cedula']);
 		$session->set('role', $response['role']);
+
+		// set cookie
+		setcookie('test', 'hola wero todo bien?', time() + 7200, '/', '', false, true);
 
 		// redirect to inicio si es admin
 		if ($response['role'] == 'admin') {
@@ -69,6 +72,10 @@ class Login extends BaseController
 	{
 		$session = session();
 		$session->destroy();
+
+		// delete cookie
+		setcookie('test', '', time() - 3600, '/', '', false, true);
+
 		return redirect()->to('/');
 	}
 }

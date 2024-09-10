@@ -8,11 +8,10 @@ class LoginModel extends Model
 {
     public function authStudent($cedula)
     {
-        $db = db_connect();
         
-        $cedulaEscaped = $db->escape($cedula);
+        $cedulaEscaped = $this->db->escape($cedula);
         
-        $query = $db->query("SELECT * FROM students WHERE Cedula = $cedulaEscaped");
+        $query = $this->db->query("SELECT * FROM students WHERE Cedula = $cedulaEscaped");
         $result = $query->getRow();
 
         // comprobar si status es = 1
@@ -31,11 +30,10 @@ class LoginModel extends Model
 
     public function authAdmin($cedula, $password){
         // Conectar a la base de datos
-        $db = db_connect();
         
         // Escapar valores correctamente y ejecutar la consulta
-        $cedulaEscaped = $db->escape($cedula);
-        $query = $db->query("SELECT * FROM users WHERE cedula = $cedulaEscaped");
+        $cedulaEscaped = $this->db->escape($cedula);
+        $query = $this->db->query("SELECT * FROM users WHERE cedula = $cedulaEscaped");
 
         // Obtener el resultado
         $result = $query->getRow();
@@ -52,11 +50,10 @@ class LoginModel extends Model
 
     public function validateAdmin($cedula)
     {
-        $db = db_connect();
         
-        $cedulaEscaped = $db->escape($cedula);
+        $cedulaEscaped = $this->db->escape($cedula);
         
-        $query = $db->query("SELECT * FROM users WHERE cedula = $cedulaEscaped");
+        $query = $this->db->query("SELECT * FROM users WHERE cedula = $cedulaEscaped");
         $result = $query->getRow();
 
         if ($result && $result->role == 'admin') {

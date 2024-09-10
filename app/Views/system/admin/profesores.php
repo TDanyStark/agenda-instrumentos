@@ -5,7 +5,6 @@
 
 <section class="flex flex-col gap-8 w-full">
   <h1 class="text-white text-6xl font-bold">Profesores</h1>
-
   <div class="flex justify-end">
     <button data-modal-target="default-modal" data-modal-toggle="default-modal" id="openModal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
       Agregar nuevo profesores
@@ -28,6 +27,29 @@
         </tr>
       </thead>
       <tbody>
+        <?php foreach ($professors as $professor) : ?>
+          <tr class="bg-white dark:bg-gray-800">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<?= $professor->Name ?>&background=random&color=fff" alt="">
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    <?= $professor->Name ?>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white"><?= $professor->Email ?></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <a href="#" class="text-indigo-600 hover:text-indigo-900">Editar</a>
+              <a href="#" class="text-red-600 hover:text-red-900">Eliminar</a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
       </tbody>
     </table>
   </div>
@@ -85,31 +107,24 @@
           <div class="agenda py-6 px-2">
             <h3 class="text-white">Agenda disponible</h3>
             <section class="semana text-white py-4 space-y-6">
-
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Domingo</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones flex">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -117,34 +132,26 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Lunes</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -152,34 +159,26 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Martes</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -187,34 +186,26 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Miercoles</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -222,34 +213,26 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Jueves</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -257,34 +240,26 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Viernes</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
-
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -292,34 +267,27 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
-
               <article class="dia flex justify-between items-start">
-
                 <div class="checkbox flex gap-1 w-24 min-w-24 justify-start">
                   <input type="checkbox" class="w-5 p-1">
                   <span class="text-sm">Sabado</span>
                 </div>
-
                 <div class="horarios min-w-56 space-y-4">
                   <div class="horario flex items-center gap-2">
                     <div class="fecha-inicio-contenedor relative">
-                      <input type="text" class="hora-inicio w-20 p-1 text-black">
+                      <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
                     </div>
                     <span>-</span>
                     <div class="fecha-fin-contenedor relative">
-                      <input type="text" class="hora-fin w-20 p-1 text-black">
+                      <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                       <!-- insertar aqui -->
 
                     </div>
                   </div>
-
                 </div>
-
                 <div class="acciones">
                   <button class="btn-add text-blue-400">
                     <svg height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -327,9 +295,7 @@
                       <path fill="currentColor" d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z" />
                     </svg>
                   </button>
-
                 </div>
-
               </article>
             </section>
           </div>
@@ -392,7 +358,7 @@
       const div = document.createElement('div');
       div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
       div.innerHTML = `
-      <span class="text-white">${option.text}</span>
+      <span class="text-white" data-roomid="${option.value}">${option.text}</span>
       <button class="btn-delete text-red-500 font-medium rounded-lg text-sm p-1 text-center">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30 30" width="24" height="24" class="icon">
         <style>
@@ -439,7 +405,7 @@
       const div = document.createElement('div');
       div.classList.add('flex', 'items-center', 'gap-4', 'px-4', 'rounded-lg', 'py-1');
       div.innerHTML = `
-      <span class="text-white">${option.text}</span>
+      <span class="text-white" data-instrumentid=${option.value}>${option.text}</span>
       <button class="btn-delete text-red-500 font-medium rounded-lg text-sm p-1 text-center">
         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 30 30" width="24" height="24" class="icon">
         <style>
@@ -497,7 +463,7 @@
       ];
 
       const divSelector = document.createElement('div');
-      divSelector.className = 'select flex flex-col bg-slate-500 absolute overflow-y-scroll max-h-28 z-50 w-[110%] shadow-md shadow-slate-800';
+      divSelector.className = 'select flex flex-col bg-slate-500 absolute overflow-y-scroll h-60 z-50 w-[110%] shadow-md shadow-slate-800';
 
       horas.forEach(hora => {
         const button = document.createElement('button');
@@ -559,11 +525,11 @@
       shelude.className = 'horario flex items-center gap-2';
       shelude.innerHTML = `
                 <div class="fecha-inicio-contenedor relative">
-                    <input type="text" class="hora-inicio w-20 p-1 text-black">
+                    <input type="text" class="hora-inicio w-20 p-1 text-black" readonly>
                 </div>
                 <span>-</span>
                 <div class="fecha-fin-contenedor relative">
-                    <input type="text" class="hora-fin w-20 p-1 text-black">
+                    <input type="text" class="hora-fin w-20 p-1 text-black" readonly>
                 </div>
                 <button class="btn-close text-gray-300">
                       <svg height="23" id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="23" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -627,12 +593,22 @@
 
       const nombre = document.getElementById('nombre').value;
       const email = document.getElementById('email').value;
-      const salones = Array.from(salonesAgregados.children).map(child => child.querySelector('span').textContent);
+      const salones = Array.from(salonesAgregados.children).map(child => {
+        return {
+          roomId: child.querySelector('span').dataset.roomid,
+          roomName: child.querySelector('span').textContent
+        };
+      });
       if (salones.length === 0) {
         errors.push('Debe agregar al menos un salón');
       }
 
-      const instrumentos = Array.from(instrumentosAgregados.children).map(child => child.querySelector('span').textContent);
+      const instrumentos = Array.from(instrumentosAgregados.children).map(child => {
+        return {
+          instrumentId: child.querySelector('span').dataset.instrumentid,
+          instrumentName: child.querySelector('span').textContent
+        };
+      });
       if (instrumentos.length === 0) {
         errors.push('Debe agregar al menos un instrumento');
       }
@@ -651,8 +627,8 @@
         }
 
         const diaSemana = dia.querySelector('span').textContent;
-        const horarios = Array.from(dia.querySelectorAll('.horario')).map(horario => {
 
+        const horarios = Array.from(dia.querySelectorAll('.horario')).map(horario => {
           const horaInicio = horario.querySelector('.hora-inicio').value;
           const horaFin = horario.querySelector('.hora-fin').value;
           return {
@@ -694,23 +670,29 @@
         return;
       }
 
-      console.log({
+      let data = {
         nombre,
         email,
         salones,
         instrumentos,
         dias
+      };
+
+      fetch('<?= base_url('api/add-professor') ?>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
       });
+
     });
 
     const btnsDelete = document.querySelectorAll('.btn-delete');
-
-    btnsDelete.forEach(btn => {
-      btn.addEventListener('click', function() {
-
-      });
-    });
-
 
   });
 </script>

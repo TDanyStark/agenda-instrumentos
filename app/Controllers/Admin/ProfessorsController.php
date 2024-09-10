@@ -20,17 +20,18 @@ class ProfessorsController extends BaseController
         // parameter get
         $modal = $this->request->getGet('modal');
 
-
-
         $data = [
             'title' => 'Profesores',
+            'professors' => $professorsModel->getProfessors(),
             'rooms' => $roomsModel->getRooms(),
             'instruments' => $instrumentModel->getInstruments(),
-            'modal' => $modal
+            'modal' => $modal,
         ];
+
 
         return view('template/header', $data)
             . view('system/admin/profesores', $data)
             . view('template/footer');
+
     }
 }
