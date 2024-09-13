@@ -19,7 +19,7 @@ class RoomsController extends BaseController
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Invalid data'
-            ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+            ])->setStatusCode(400);
         }
 
         // si hay un campo vacio return error
@@ -27,7 +27,7 @@ class RoomsController extends BaseController
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Empty fields'
-            ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+            ])->setStatusCode(400);
         }
 
         // cargar el modelo
@@ -56,7 +56,7 @@ class RoomsController extends BaseController
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Invalid data'
-            ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+            ])->setStatusCode(400);
         }
 
         // si hay un campo vacio return error
@@ -64,7 +64,7 @@ class RoomsController extends BaseController
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Empty fields'
-            ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
+            ])->setStatusCode(400);
         }
 
         // cargar el modelo
@@ -73,11 +73,19 @@ class RoomsController extends BaseController
         // eliminar el salon
         $affectedRows = $model->deleteRoom($data->RoomID);
 
+        if (isset($affectedRows['error'])) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'El salon esta asociado a un profesor, o a un horario, no se puede eliminar',
+                'error' => $affectedRows['error'],
+                'errorCode' => $affectedRows['errorCode']
+            ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         // retornar la respuesta
         return $this->response->setJSON([
             'status' => 'success',
-            'message' => 'Room deleted',
-            'affectedRows' => $affectedRows
+            'message' => 'Room deleted'
         ]);
     }
 }

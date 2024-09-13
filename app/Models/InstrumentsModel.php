@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class InstrumentsModel extends Model
 {
@@ -21,7 +22,14 @@ class InstrumentsModel extends Model
 
     public function deleteInstrument($id)
     {
-        $query = $this->db->query('DELETE FROM instruments WHERE InstrumentID = ?', [$id]);
-        return $this->db->affectedRows();
+        try {
+            $query = $this->db->query('DELETE FROM instruments WHERE InstrumentID = ?', [$id]);
+            return [
+                'status' => 'success',
+                'message' => 'Room deleted'
+            ];
+        } catch (DatabaseException $e) {
+            return ['error' => $e->getMessage(), 'errorCode' => $e->getCode()];
+        }
     }
 }

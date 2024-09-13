@@ -37,7 +37,7 @@
                             <?= $curso->ClassDuration ?>
                         </td>
                         <td class="px-6 py-4">
-                            <button class="btn-delete border border-red-700 py-1 px-2" data-cursoid="<?= $curso->CourseID ?>">Eliminar</button>
+                            <button class="btn-delete text-red-600 hover:text-red-900" data-cursoid="<?= $curso->CourseID ?>">Eliminar</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -123,7 +123,7 @@
             alert('Todos los campos son requeridos');
             return;
         }
-        fetch('api/add-course', {
+        fetch('<?= base_url('api/add-course') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -156,7 +156,7 @@
     btnsDelete.forEach(btn => {
         btn.addEventListener('click', function() {
             const cursoId = this.getAttribute('data-cursoid');
-            fetch('api/delete-course', {
+            fetch('<?= base_url('api/delete-course') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

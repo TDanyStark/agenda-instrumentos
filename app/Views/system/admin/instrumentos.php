@@ -37,7 +37,7 @@
                             <?= $instrument->InstrumentName ?>
                         </td>
                         <td class="px-6 py-4">
-                            <button data-id="<?= $instrument->InstrumentID ?>" class="btn-delete border border-red-700 py-1 px-2" type="button">
+                            <button data-id="<?= $instrument->InstrumentID ?>" class="btn-delete text-red-600 hover:text-red-900" type="button">
                                 Eliminar
                             </button>
                         </td>
@@ -114,7 +114,7 @@
             return;
         }
 
-        fetch('/api/add-instrument', {
+        fetch('<?= base_url('api/add-instrument') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -125,7 +125,7 @@
         }).then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                  Swal.fire({
+                    Swal.fire({
                         title: 'Instrumento agregado',
                         icon: 'success',
                         showConfirmButton: false,
@@ -143,7 +143,7 @@
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
 
-            fetch('/api/delete-instrument', {
+            fetch('<?= base_url('api/delete-instrument') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -153,6 +153,9 @@
                 })
             }).then(response => response.json())
                 .then(data => {
+                    if (data.status === 'error') {
+                        throw new Error(data.message);
+                    }
                     if (data.status === 'success') {
                         Swal.fire({
                             title: 'Instrumento eliminado',
@@ -163,6 +166,13 @@
                             window.location.reload();
                         });
                     }
+                }).catch(error => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.message,
+                        icon: 'error',
+                        showConfirmButton: true,
+                    });
                 });
         });
     });

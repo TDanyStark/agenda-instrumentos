@@ -11,8 +11,8 @@
     </button>
   </div>
 
-  <div class="relative overflow-x-auto max-w-full">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+  <div class="relative overflow-x-auto max-w-full text-white">
+    <table id="tablaProfesores" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3">
@@ -57,7 +57,7 @@
   </div>
   <!-- Main modal -->
   <div id="modal-add" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 justify-center items-center w-full backdrop-blur m-0">
-    <div id="contenedor-popup" class="relative w-full max-w-2xl h-screen py-8">
+    <div id="contenedor-popup" class="relative w-full max-w-2xl h-screen p-4 lg:p-8">
       <!-- Modal content -->
       <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 h-full flex flex-col">
         <!-- Modal header -->
@@ -137,6 +137,10 @@
     // instrumentos
     const selectInstrumentos = document.getElementById('instrumentos');
 
+
+    let table = new DataTable('#tablaProfesores', {
+      responsive: true,
+    });
 
     let formData = {
       professorId: '',
@@ -279,10 +283,7 @@
         const btnDelete = div.querySelector('.btn-delete');
         btnDelete.addEventListener('click', function(e) {
           e.stopPropagation(); // Detiene la propagación del evento de clic
-          console.log(formData.salones);
-          console.log(btnDelete.dataset.roomid);
           formData.salones = formData.salones.filter(salon => salon.roomId !== btnDelete.dataset.roomid);
-          console.log(formData.salones);
           renderSalones();
         });
       });
@@ -292,11 +293,14 @@
       const option = selectSalones.options[selectSalones.selectedIndex];
       if (option.value === 'Agregue un salón') return;
       // validar si ya existe el salon
-      const exists = formData.salones.some(salon => salon.roomId === parseInt(option.value));
-      if (exists) return;
+      const exists = formData.salones.some(salon => salon.roomId === option.value);
+      if (exists) {
+        selectSalones.value = 'Agregue un salón'
+        return
+      };
 
       formData.salones.push({
-        roomId: parseInt(option.value),
+        roomId: option.value,
         roomName: option.text
       });
 
@@ -350,11 +354,14 @@
       const option = selectInstrumentos.options[selectInstrumentos.selectedIndex];
       if (option.value === 'Agregue un instrumento') return;
       // validar si ya existe el instrumento
-      const exists = formData.instrumentos.some(instrumento => instrumento.instrumentId === parseInt(option.value));
-      if (exists) return;
+      const exists = formData.instrumentos.some(instrumento => instrumento.instrumentId === option.value);
+      if (exists) {
+        selectInstrumentos.value = 'Agregue un instrumento'
+        return;
+      };
 
       formData.instrumentos.push({
-        instrumentId: parseInt(option.value),
+        instrumentId: option.value,
         instrumentName: option.text
       });
 
@@ -465,6 +472,7 @@
       });
     }
 
+
     // Función para crear un bloque de horario
     function crearHorario(diaName, horarioIndex) {
       const horarioDiv = document.createElement('div');
@@ -559,6 +567,7 @@
       return horarioDiv;
     }
 
+
     function crearSelectorHoras(contenedor, dia, horarioIndex, tipo) {
       const agendaDia = formData.agenda.find(d => d.diaName === dia);
       if (agendaDia.horarios[horarioIndex].inicio === '' && tipo === 'fin') {
@@ -620,6 +629,7 @@
 
       contenedor.appendChild(divSelector);
     }
+
 
     // Llamamos a la función para renderizar los horarios inicialmente
     renderHorarios();
@@ -683,10 +693,9 @@
           body: JSON.stringify(formData)
         }).then(response => response.json())
         .then(data => {
+          let mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
+          let mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
           if (data.status === 'success') {
-            let mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
-            let mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
-
             Swal.fire({
               title: `Profesor ${mensajeModo}`,
               icon: 'success',

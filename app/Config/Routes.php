@@ -39,4 +39,9 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthAp
   $routes->post('get-professor', 'ProfessorsController::getProfessorForEdit');
   $routes->post('update-professor', 'ProfessorsController::updateProfessor');
 
+  $routes->post('add-student', 'StudentsController::addStudent');
+  $routes->post('delete-student', 'StudentsController::deleteStudent');
+  $routes->post('get-student', 'StudentsController::getStudentForEdit');
+  $routes->post('update-student', 'StudentsController::updateStudent');
+
 });

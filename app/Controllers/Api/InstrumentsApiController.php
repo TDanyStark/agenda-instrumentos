@@ -73,6 +73,13 @@ class InstrumentsApiController extends BaseController
     // eliminar el instrumento
     $affectedRows = $model->deleteInstrument($data->InstrumentID);
 
+    if(isset($affectedRows['error'])){
+      return $this->response->setJSON([
+        'status' => 'error',
+        'message' => "No se pudo eliminar el instrumento, debe estar asociado a un profesor o a un estudiante"
+      ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
     // retornar la respuesta
     return $this->response->setJSON([
       'status' => 'success',

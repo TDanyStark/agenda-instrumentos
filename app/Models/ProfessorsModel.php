@@ -59,7 +59,7 @@ class ProfessorsModel extends Model
     {
         try {
             $this->db->query('INSERT INTO professors (Name, Email) VALUES (?, ?)', [$data['Name'], $data['Email']]);
-            return $this->db->insertID();
+            return true;
         } catch (DatabaseException  $e) {
             return ['error' => $e->getMessage(), 'errorCode' => $e->getCode()];
         }

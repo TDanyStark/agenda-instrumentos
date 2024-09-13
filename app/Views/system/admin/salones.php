@@ -37,7 +37,7 @@
                             <?= $room->RoomName ?>
                         </td>
                         <td class="px-6 py-4">
-                            <button class="btn-delete border border-red-700 py-1 px-2" data-roomid="<?= $room->RoomID ?>">Eliminar</button>
+                            <button class="btn-delete text-red-600 hover:text-red-900" data-roomid="<?= $room->RoomID ?>">Eliminar</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -108,7 +108,7 @@
     btnGuardar.addEventListener('click', () => {
         const nombre = document.getElementById('nombre').value;
 
-        fetch('/api/add-room', {
+        fetch('<?= base_url('api/add-room') ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -139,7 +139,7 @@
         btn.addEventListener('click', function() {
             const id = this.getAttribute('data-roomid');
             
-            fetch('/api/delete-room', {
+            fetch('<?= base_url('api/delete-room') ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -149,6 +149,9 @@
                 })
             }).then(response => response.json())
             .then(data => {
+                if(data.status === 'error'){
+                    throw new Error(data.message);
+                }
                 if (data.status === 'success') {
                     Swal.fire({
                         title: 'Salon eliminado',
@@ -160,7 +163,12 @@
                     });
                 }
             }).catch(error => {
-                console.error(error);
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message,
+                    icon: 'error',
+                    showConfirmButton: true,
+                });
             });
         });
     });

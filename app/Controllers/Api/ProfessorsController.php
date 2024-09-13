@@ -11,7 +11,25 @@ class ProfessorsController extends BaseController
     public function addProfessor()
     {
         $json = $this->request->getJSON(true); // true lo convierte en un array asociativo
-        $result = $this->addProfessorMethods($json);
+
+        $professorModel = new ProfessorsModel();
+
+        $name = $json['name'];
+        $email = $json['email'];
+        // Insertar profesor
+        $result = $professorModel->addProfessor(['Name' => $name, 'Email' => $email]);
+
+
+        if (isset($result['error'])) {
+            if ($result["errorCode"] == 1062) {
+                return $this->response->setJSON(['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'El correo del profesor ' . $email . ' ya se encuentra registrado']);
+            }
+            return $this->response->setJSON(['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'Error al agregar al profesor ' . $name]);
+        }
+
+        $professorID = $result;
+
+        $result = $this->addProfessorMethods($json, $professorID);
         if (isset($result['error'])) {
             return $this->response->setJSON([
                 'status' => 'error',
@@ -33,6 +51,16 @@ class ProfessorsController extends BaseController
                 'message' => 'Error al eliminar el profesor: ' . $result['error'],
                 'errorCode' => $result['errorCode']
             ])->setStatusCode(400);
+        }
+
+        $professorModel = new ProfessorsModel();
+
+        $professorID = $json['professorId'];
+
+        // Eliminar profesor
+        $result = $professorModel->deleteProfessor($professorID);
+        if (isset($result['error'])) {
+            return $this->response->setJSON(['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'Error al eliminar el profesor']);
         }
 
         return $this->response->setJSON(['status' => 'success', 'message' => 'Profesor eliminado exitosamente']);
@@ -81,24 +109,18 @@ class ProfessorsController extends BaseController
         return $this->response->setJSON(['status' => 'success', 'message' => 'Profesor editado exitosamente']);
     }
 
-    public function addProfessorMethods($json)
+    public function addProfessorMethods($json, $professorID = null)
     {
-        $name = $json['name'];
-        $email = $json['email'];
+
         $salones = $json['salones'];
         $instrumentos = $json['instrumentos'];
         $agenda = $json['agenda'];
 
-        $professorModel = new ProfessorsModel();
-
-        // Insertar profesor
-        $result = $professorModel->addProfessor(['Name' => $name, 'Email' => $email]);
-
-        if (isset($result['error'])) {
-            return ['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'Error al agregar al profesor ' . $name];
+        if ($professorID == null) {
+            $professorID = $json['professorId'];
         }
 
-        $professorID = $result;
+        $professorModel = new ProfessorsModel();
 
         // Insertar salones
         foreach ($salones as $salon) {
@@ -154,12 +176,6 @@ class ProfessorsController extends BaseController
         $result = $professorModel->deleteProfessorRooms($professorID);
         if (isset($result['error'])) {
             return ['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'Error al eliminar los salones del profesor'];
-        }
-
-        // Eliminar profesor
-        $result = $professorModel->deleteProfessor($professorID);
-        if (isset($result['error'])) {
-            return ['error' => $result["error"], 'errorCode' => $result["errorCode"], 'message' => 'Error al eliminar el profesor'];
         }
     }
 }

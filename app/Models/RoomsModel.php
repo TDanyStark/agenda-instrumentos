@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class RoomsModel extends Model
 {
@@ -21,7 +22,14 @@ class RoomsModel extends Model
 
     public function deleteRoom($id)
     {
-        $query = $this->db->query('DELETE FROM rooms WHERE RoomID = ?', [$id]);
-        return $this->db->affectedRows();
+        try {
+            $query = $this->db->query('DELETE FROM rooms WHERE RoomID = ?', [$id]);
+            return [
+                'status' => 'success',
+                'message' => 'Room deleted'
+            ];
+        } catch (DatabaseException $e) {
+            return ['error' => $e->getMessage(), 'errorCode' => $e->getCode()];
+        }
     }
 }

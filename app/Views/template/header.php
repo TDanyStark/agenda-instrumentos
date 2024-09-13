@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="<?= base_url('css/styles.css') ?>">
     <link rel="stylesheet" href="<?= base_url('css/sweetalert.css') ?>">
     <script src="<?= base_url('js/sweetalert.js') ?>"></script>
+    <script src="<?= base_url('js/jquery-3.7.1.min.js') ?>"></script>
+    <script src="<?= base_url('js/datatables.min.js') ?>"></script>
+    <link rel="stylesheet" href="<?= base_url('css/datatables.min.css') ?>">
+
+
+
 
     <style {csp-style-nonce}>
         :root {
