@@ -115,7 +115,7 @@
         </section>
         <!-- Modal footer -->
         <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-          <button id="btn-guardar" data-modal-hide="default-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enviar</button>
+          <button id="btn-editar" data-modal-hide="default-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Enviar</button>
           <button id="btn-cancelar" data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark: dark:hover:bg-gray-700">Cancelar</button>
         </div>
       </div>
@@ -138,6 +138,60 @@
     const selectInstrumentos = document.getElementById('instrumentos');
 
 
+    let formData = {
+      professorId: '',
+      modo: '',
+      name: '',
+      email: '',
+      salones: [],
+      instrumentos: [],
+      agenda: [{
+          diaName: 'Domingo',
+          diaDisplay: 'Domingo',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Lunes',
+          diaDisplay: 'Lunes',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Martes',
+          diaDisplay: 'Martes',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Miercoles',
+          diaDisplay: 'Miércoles',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Jueves',
+          diaDisplay: 'Jueves',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Viernes',
+          diaDisplay: 'Viernes',
+          activo: false,
+          horarios: []
+        },
+        {
+          diaName: 'Sabado',
+          diaDisplay: 'Sábado',
+          activo: false,
+          horarios: []
+        }
+      ]
+    };
+
+    let copyFormData = JSON.parse(JSON.stringify(formData))
+
     const changeModalState = () => {
       modalAdd.classList.toggle('flex');
       modalAdd.classList.toggle('hidden');
@@ -148,73 +202,20 @@
     <?php endif; ?>
 
     newProfessor.addEventListener('click', () => {
-      changeModalState();
+      formData = JSON.parse(JSON.stringify(copyFormData))
       formData.modo = 'add';
+      renderFormData();
+      changeModalState();
     });
 
     closeModal.addEventListener('click', changeModalState);
 
     btnCancelar.addEventListener('click', changeModalState);
 
-
     function deleteAllSelectors() {
       const allSelectors = document.querySelectorAll('.select');
       allSelectors.forEach(selector => selector.remove());
     }
-
-    let formData = {
-      professorId: '',
-      modo: '',
-      name: '',
-      email: '',
-      salones: [],
-      instrumentos: [],
-      agenda: [{
-          id: 'domingo',
-          nombre: 'Domingo',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'lunes',
-          nombre: 'Lunes',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'martes',
-          nombre: 'Martes',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'miercoles',
-          nombre: 'Miércoles',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'jueves',
-          nombre: 'Jueves',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'viernes',
-          nombre: 'Viernes',
-          activo: false,
-          horarios: []
-        },
-        {
-          id: 'sabado',
-          nombre: 'Sábado',
-          activo: false,
-          horarios: []
-        }
-
-      ]
-    };
-
 
     const renderFormData = () => {
       renderNameAndEmail();
@@ -229,12 +230,10 @@
 
     $name.addEventListener('input', function() {
       formData.name = $name.value;
-      console.log(formData);
     });
 
     $email.addEventListener('input', function() {
       formData.email = $email.value;
-      console.log(formData);
     });
 
     // render name y email
@@ -280,7 +279,10 @@
         const btnDelete = div.querySelector('.btn-delete');
         btnDelete.addEventListener('click', function(e) {
           e.stopPropagation(); // Detiene la propagación del evento de clic
-          formData.salones = formData.salones.filter(salon => salon.roomId !== parseInt(btnDelete.dataset.roomid));
+          console.log(formData.salones);
+          console.log(btnDelete.dataset.roomid);
+          formData.salones = formData.salones.filter(salon => salon.roomId !== btnDelete.dataset.roomid);
+          console.log(formData.salones);
           renderSalones();
         });
       });
@@ -338,7 +340,7 @@
         const btnDelete = div.querySelector('.btn-delete');
         btnDelete.addEventListener('click', function(e) {
           e.stopPropagation(); // Detiene la propagación del evento de clic
-          formData.instrumentos = formData.instrumentos.filter(instrumento => instrumento.instrumentId !== parseInt(btnDelete.dataset.instrumentid));
+          formData.instrumentos = formData.instrumentos.filter(instrumento => instrumento.instrumentId !== btnDelete.dataset.instrumentid);
           renderInstrumentos();
         });
       });
@@ -390,7 +392,7 @@
 
         const span = document.createElement('span');
         span.className = 'text-sm';
-        span.textContent = dia.nombre;
+        span.textContent = dia.diaDisplay;
 
         checkboxDiv.appendChild(checkbox);
         checkboxDiv.appendChild(span);
@@ -402,7 +404,7 @@
         // Si el día está activo, renderizamos sus horarios
         if (dia.activo && dia.horarios.length > 0) {
           dia.horarios.forEach((horario, index) => {
-            const horarioDiv = crearHorario(dia.id, index);
+            const horarioDiv = crearHorario(dia.diaName, index);
             horariosDiv.appendChild(horarioDiv);
           });
         } else {
@@ -411,7 +413,7 @@
             inicio: '',
             fin: ''
           });
-          const horarioDiv = crearHorario(dia.id, 0);
+          const horarioDiv = crearHorario(dia.diaName, 0);
           horariosDiv.appendChild(horarioDiv);
         }
 
@@ -446,7 +448,7 @@
             fin: ''
           };
           dia.horarios.push(nuevoHorario);
-          const horarioDiv = crearHorario(dia.id, dia.horarios.length - 1);
+          const horarioDiv = crearHorario(dia.diaName, dia.horarios.length - 1);
           horariosDiv.appendChild(horarioDiv);
           deleteAllSelectors();
         });
@@ -464,7 +466,7 @@
     }
 
     // Función para crear un bloque de horario
-    function crearHorario(diaId, horarioIndex) {
+    function crearHorario(diaName, horarioIndex) {
       const horarioDiv = document.createElement('div');
       horarioDiv.className = 'horario flex items-center gap-2';
 
@@ -474,13 +476,13 @@
       const horaInicioInput = document.createElement('input');
       horaInicioInput.type = 'text';
       horaInicioInput.className = 'hora-inicio w-20 p-1 text-black';
-      horaInicioInput.value = formData.agenda.find(d => d.id === diaId).horarios[horarioIndex].inicio;
+      horaInicioInput.value = formData.agenda.find(d => d.diaName === diaName).horarios[horarioIndex].inicio;
       horaInicioInput.addEventListener('input', (e) => {
-        formData.agenda.find(d => d.id === diaId).horarios[horarioIndex].inicio = e.target.value;
+        formData.agenda.find(d => d.diaName === diaName).horarios[horarioIndex].inicio = e.target.value;
       });
       horaInicioInput.addEventListener('click', function() {
         deleteAllSelectors();
-        crearSelectorHoras(fechaInicioDiv, diaId, horarioIndex, 'inicio');
+        crearSelectorHoras(fechaInicioDiv, diaName, horarioIndex, 'inicio');
       });
 
       fechaInicioDiv.appendChild(horaInicioInput);
@@ -494,10 +496,10 @@
       const horaFinInput = document.createElement('input');
       horaFinInput.type = 'text';
       horaFinInput.className = 'hora-fin w-20 p-1 text-black';
-      horaFinInput.value = formData.agenda.find(d => d.id === diaId).horarios[horarioIndex].fin;
+      horaFinInput.value = formData.agenda.find(d => d.diaName === diaName).horarios[horarioIndex].fin;
       horaFinInput.addEventListener('input', (e) => {
         // si la hora de inicio esta vacia, no se puede seleccionar la hora de fin
-        if (formData.agenda.find(d => d.id === diaId).horarios[horarioIndex].inicio === '') {
+        if (formData.agenda.find(d => d.diaName === diaName).horarios[horarioIndex].inicio === '') {
           Swal.fire({
             title: 'Error',
             text: 'Debe seleccionar una hora de inicio primero',
@@ -507,12 +509,12 @@
           horaFinInput.value = '';
           return;
         }
-        formData.agenda.find(d => d.id === diaId).horarios[horarioIndex].fin = e.target.value;
+        formData.agenda.find(d => d.diaName === diaName).horarios[horarioIndex].fin = e.target.value;
 
       });
       horaFinInput.addEventListener('click', function() {
         deleteAllSelectors();
-        crearSelectorHoras(fechaFinDiv, diaId, horarioIndex, 'fin');
+        crearSelectorHoras(fechaFinDiv, diaName, horarioIndex, 'fin');
       });
 
       fechaFinDiv.appendChild(horaFinInput);
@@ -547,7 +549,7 @@
         `;
 
         btnClose.addEventListener('click', function() {
-          formData.agenda.find(d => d.id === diaId).horarios.splice(horarioIndex, 1);
+          formData.agenda.find(d => d.diaName === diaName).horarios.splice(horarioIndex, 1);
           renderHorarios();
         });
 
@@ -558,7 +560,7 @@
     }
 
     function crearSelectorHoras(contenedor, dia, horarioIndex, tipo) {
-      const agendaDia = formData.agenda.find(d => d.id === dia);
+      const agendaDia = formData.agenda.find(d => d.diaName === dia);
       if (agendaDia.horarios[horarioIndex].inicio === '' && tipo === 'fin') {
         Swal.fire({
           title: 'Error',
@@ -604,11 +606,11 @@
 
         button.addEventListener('click', function(e) {
           e.stopPropagation();
-          formData.agenda.find(d => d.id === dia).activo = true;
+          formData.agenda.find(d => d.diaName === dia).activo = true;
           if (tipo === 'inicio') {
-            formData.agenda.find(d => d.id === dia).horarios[horarioIndex].inicio = hora;
+            formData.agenda.find(d => d.diaName === dia).horarios[horarioIndex].inicio = hora;
           } else {
-            formData.agenda.find(d => d.id === dia).horarios[horarioIndex].fin = hora;
+            formData.agenda.find(d => d.diaName === dia).horarios[horarioIndex].fin = hora;
           }
           renderHorarios();
           divSelector.remove(); // Quita el selector después de elegir una hora
@@ -623,9 +625,89 @@
     renderHorarios();
 
 
-    const btnGuardar = document.getElementById('btn-guardar');
-    btnGuardar.addEventListener('click', () => {
+    const btnEnviar = document.getElementById('btn-editar');
+    btnEnviar.addEventListener('click', () => {
       console.log(formData);
+      // validar que todos los campos esten llenos
+      let errores = [];
+      if (formData.name === '') {
+        errores.push('El campo nombre es obligatorio');
+      }
+      if (formData.email === '') {
+        errores.push('El campo email es obligatorio');
+      }
+      if (formData.salones.length === 0) {
+        errores.push('Debe agregar al menos un salón');
+      }
+      if (formData.instrumentos.length === 0) {
+        errores.push('Debe agregar al menos un instrumento');
+      }
+      if (formData.agenda.every(dia => !dia.activo)) {
+        errores.push('Debe seleccionar al menos un día de la semana');
+      }
+
+      if (formData.agenda.some(dia => dia.activo && dia.horarios.some(horario => horario.inicio === '' || horario.fin === ''))) {
+        errores.push('Debe llenar la hora de inicio y la hora de fin de todos los horarios activos');
+      }
+
+      // si la hora de inicio es mayor a la hora de fin, que salte un error
+      formData.agenda.forEach(dia => {
+        if (dia.activo) {
+          dia.horarios.forEach(horario => {
+            if (horario.inicio !== '' && horario.fin !== '') {
+              if (horario.inicio >= horario.fin) {
+                errores.push(`La hora de inicio no puede ser mayor o igual a la hora de fin en ${dia.diaDisplay}`);
+              }
+            }
+          });
+        }
+      });
+
+      if (errores.length > 0) {
+        Swal.fire({
+          title: 'Error',
+          html: errores.join('<br>'),
+          icon: 'error',
+          showConfirmButton: true,
+        });
+        return;
+      }
+
+      const urlApi = formData.modo === 'add' ? '<?= base_url('api/add-professor') ?>' : '<?= base_url('api/update-professor') ?>';
+
+      fetch(urlApi, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        }).then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            let mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
+            let mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
+
+            Swal.fire({
+              title: `Profesor ${mensajeModo}`,
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1000
+            }).then(() => {
+              window.location.reload();
+            });
+          } else {
+            console.log(data);
+            Swal.fire({
+              title: `Error al ${mensajeModoError} profesor`,
+              text: data.message,
+              icon: 'error',
+              showConfirmButton: true,
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
 
     });
 
@@ -726,7 +808,7 @@
             });
 
             professorAvailability.forEach(availability => {
-              const dia = formData.agenda.find(d => d.id.toLowerCase() === availability.DayOfWeek.toLowerCase());
+              const dia = formData.agenda.find(d => d.diaName.toLowerCase() === availability.DayOfWeek.toLowerCase());
 
               if (dia) {
                 dia.activo = true;
