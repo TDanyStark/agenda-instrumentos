@@ -36,5 +36,6 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthAp
 
   $routes->post('add-professor', 'ProfessorsController::addProfessor');
   $routes->post('delete-professor', 'ProfessorsController::deleteProfessor');
+  $routes->post('get-professor', 'ProfessorsController::getProfessorForEdit');
 
 });
