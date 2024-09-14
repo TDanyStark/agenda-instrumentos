@@ -55,4 +55,39 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
     }
+
+    protected function formatResponse($result, $successMessage = '', $errorMessage = 'Ocurrió un error')
+    {
+        if (isset($result['status']) && $result['status'] === 'error') {
+
+            $message = '';
+
+            if (isset($result['errorCode'])) {
+                switch ($result['errorCode']) {
+                    case 1062:
+                        $message = 'El registro ya existe en la base de datos';
+                        break;
+                    case 1451:
+                        $message = 'El registro está asociado a otros registros y no puede ser eliminado';
+                        break;
+                    default:
+                        $message = $errorMessage;
+                        break;
+                }
+            }
+
+
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => $message,
+                'errorCode' => $result['errorCode'] ?? null
+            ])->setStatusCode(400);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => $successMessage,
+            'data' =>  isset($result['data']) ? $result['data'] : null
+        ]);
+    }
 }

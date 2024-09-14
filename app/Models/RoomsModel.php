@@ -3,33 +3,24 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class RoomsModel extends Model
 {
     public function getRooms()
     {
-        $query = $this->db->query('SELECT * FROM rooms');
-        $result = $query->getResult();
-        return $result;
+        $query = 'SELECT * FROM rooms';
+        return $this->executeQuery($query); // Siempre retorna el resultado, el controlador maneja el error
     }
 
     public function addRoom($data)
     {
-        $query = $this->db->query('INSERT INTO rooms (RoomName) VALUES (?)', [$data['RoomName']]);
-        return $this->db->insertID();
+        $query = 'INSERT INTO rooms (RoomName) VALUES (?)';
+        return $this->executeQuery($query, [$data['RoomName']]); // Siempre retorna el resultado, el controlador maneja el error
     }
 
     public function deleteRoom($id)
     {
-        try {
-            $query = $this->db->query('DELETE FROM rooms WHERE RoomID = ?', [$id]);
-            return [
-                'status' => 'success',
-                'message' => 'Room deleted'
-            ];
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage(), 'errorCode' => $e->getCode()];
-        }
+        $query = 'DELETE FROM rooms WHERE RoomID = ?';
+        return $this->executeQuery($query, [$id]); // Siempre retorna el resultado, sea éxito o error
     }
 }

@@ -3,144 +3,104 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class ProfessorsModel extends Model
 {
-
     public function getProfessors()
     {
-        try {
-            $query = $this->db->query('SELECT * FROM professors');
-            return $query->getResult();
-        } catch (DatabaseException $e) {
-            // Manejar error
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'SELECT * FROM professors';
+        return $this->executeQuery($query); // Siempre retorna el resultado
     }
 
     public function getProfessorForEdit($id)
     {
-        try {
-            $professor = $this->db->query('SELECT * FROM professors WHERE ProfessorID = ?', [$id]);
-            // Obtener las habitaciones asociadas al profesor con RoomName
-            $professorRooms = $this->db->query('
-                SELECT pr.RoomID, r.RoomName 
-                FROM professorrooms pr
-                JOIN rooms r ON pr.RoomID = r.RoomID
-                WHERE pr.ProfessorID = ?', [$id]);
+        $professorQuery = 'SELECT * FROM professors WHERE ProfessorID = ?';
+        $professorRoomsQuery = '
+            SELECT pr.RoomID, r.RoomName 
+            FROM professorrooms pr
+            JOIN rooms r ON pr.RoomID = r.RoomID
+            WHERE pr.ProfessorID = ?';
+        $professorInstrumentsQuery = '
+            SELECT pi.InstrumentID, i.InstrumentName 
+            FROM professorinstrument pi
+            JOIN instruments i ON pi.InstrumentID = i.InstrumentID
+            WHERE pi.ProfessorID = ?';
+        $professorAvailabilityQuery = '
+            SELECT * 
+            FROM professoravailability 
+            WHERE ProfessorID = ? 
+            ORDER BY DayOfWeek ASC, StartTime ASC';
 
-            // Obtener los instrumentos asociados al profesor con InstrumentName
-            $professorInstruments = $this->db->query('
-                SELECT pi.InstrumentID, i.InstrumentName 
-                FROM professorinstrument pi
-                JOIN instruments i ON pi.InstrumentID = i.InstrumentID
-                WHERE pi.ProfessorID = ?', [$id]);
+        $professor = $this->executeQuery($professorQuery, [$id], true);
+        $professorRooms = $this->executeQuery($professorRoomsQuery, [$id], true);
+        $professorInstruments = $this->executeQuery($professorInstrumentsQuery, [$id], true);
+        $professorAvailability = $this->executeQuery($professorAvailabilityQuery, [$id], true);
 
-            $professorAvailability = $this->db->query('
-                SELECT * 
-                FROM professoravailability 
-                WHERE ProfessorID = ? 
-                ORDER BY DayOfWeek ASC, StartTime ASC', [$id]);
-
-            return [
-                'professor' => $professor->getRow(),
-                'professorRooms' => $professorRooms->getResult(),
-                'professorInstruments' => $professorInstruments->getResult(),
-                'professorAvailability' => $professorAvailability->getResult()
-            ];
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        return [
+            "data" => [
+                "professor" => $professor,
+                "professorRooms" => $professorRooms,
+                "professorInstruments" => $professorInstruments,
+                "professorAvailability" => $professorAvailability
+            ]
+        ];
     }
 
     //******************** Add professor ******************
     public function addProfessor($data)
     {
-        try {
-            $this->db->query('INSERT INTO professors (Name, Email) VALUES (?, ?)', [$data['Name'], $data['Email']]);
-            return true;
-        } catch (DatabaseException  $e) {
-            return ['error' => $e->getMessage(), 'errorCode' => $e->getCode()];
-        }
+        $query = 'INSERT INTO professors (Name, Email) VALUES (?, ?)';
+        return $this->executeQuery($query, [$data['Name'], $data['Email']]);
     }
 
     public function addProfessorRoom($data)
     {
-        try {
-            $this->db->query('INSERT INTO professorrooms (ProfessorID, RoomID) VALUES (?, ?)', [$data['ProfessorID'], $data['RoomID']]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'INSERT INTO professorrooms (ProfessorID, RoomID) VALUES (?, ?)';
+        return $this->executeQuery($query, [$data['ProfessorID'], $data['RoomID']]);
     }
 
     public function addProfessorInstrument($data)
     {
-        try {
-            $this->db->query('INSERT INTO professorinstrument (ProfessorID, InstrumentID) VALUES (?, ?)', [$data['ProfessorID'], $data['InstrumentID']]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'INSERT INTO professorinstrument (ProfessorID, InstrumentID) VALUES (?, ?)';
+        return $this->executeQuery($query, [$data['ProfessorID'], $data['InstrumentID']]);
     }
 
     public function addProfessorAvailability($data)
     {
-        try {
-            $this->db->query('INSERT INTO professoravailability (ProfessorID, DayOfWeek, StartTime, EndTime) VALUES (?, ?, ?, ?)', [
-                $data['ProfessorID'],
-                $data['DayOfWeek'],
-                $data['StartTime'],
-                $data['EndTime']
-            ]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'INSERT INTO professoravailability (ProfessorID, DayOfWeek, StartTime, EndTime) VALUES (?, ?, ?, ?)';
+        return $this->executeQuery($query, [
+            $data['ProfessorID'],
+            $data['DayOfWeek'],
+            $data['StartTime'],
+            $data['EndTime']
+        ]);
     }
 
     //******************** delete professor ******************
     public function deleteProfessor($id)
     {
-        try {
-            $this->db->query('DELETE FROM professors WHERE ProfessorID = ?', [$id]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'DELETE FROM professors WHERE ProfessorID = ?';
+        return $this->executeQuery($query, [$id]);
     }
 
     // delete professor room
     public function deleteProfessorRooms($id)
     {
-        try {
-            $this->db->query('DELETE FROM professorrooms WHERE ProfessorID = ?', [$id]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'DELETE FROM professorrooms WHERE ProfessorID = ?';
+        return $this->executeQuery($query, [$id]);
     }
 
     // delete professor instrument
     public function deleteProfessorInstruments($id)
     {
-        try {
-            $this->db->query('DELETE FROM professorinstrument WHERE ProfessorID = ?', [$id]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'DELETE FROM professorinstrument WHERE ProfessorID = ?';
+        return $this->executeQuery($query, [$id]);
     }
 
     // delete professor availability
     public function deleteProfessorAvailability($id)
     {
-        try {
-            $this->db->query('DELETE FROM professoravailability WHERE ProfessorID = ?', [$id]);
-            return true;
-        } catch (DatabaseException $e) {
-            return ['error' => $e->getMessage()];
-        }
+        $query = 'DELETE FROM professoravailability WHERE ProfessorID = ?';
+        return $this->executeQuery($query, [$id]);
     }
 }

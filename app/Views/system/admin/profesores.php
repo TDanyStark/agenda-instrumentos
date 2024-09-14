@@ -787,15 +787,15 @@
             })
           }).then(response => response.json())
           .then(data => {
+            console.log(data);
             const {
               Name,
               Email
-            } = data.professorData.professor;
-            const {
-              professorRooms,
-              professorInstruments,
-              professorAvailability
-            } = data.professorData;
+            } = data.data.professor.data[0];
+
+            const professorRooms = data.data.professorRooms.data;
+            const professorInstruments = data.data.professorInstruments.data;
+            const professorAvailability = data.data.professorAvailability.data;
 
             formData.modo = 'edit';
             formData.professorId = professorId;

@@ -4,88 +4,39 @@ namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
-
 use App\Models\InstrumentsModel;
 
 class InstrumentsApiController extends BaseController
 {
   public function addInstrument()
   {
-    // obtener la data enviada
-    $data = $this->request->getJSON();
+    // Obtener la data enviada
+    $data = $this->request->getJSON(true); // true lo convierte en array asociativo
 
-    // validar la data
-    if (!$data) {
-      return $this->response->setJSON([
-        'status' => 'error',
-        'message' => 'Invalid data'
-      ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-    }
-
-    // si hay un campo vacio return error
-    if (empty($data->InstrumentName)) {
-      return $this->response->setJSON([
-        'status' => 'error',
-        'message' => 'Empty fields'
-      ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-    }
-
-    // cargar el modelo
+    // Cargar el modelo
     $model = new InstrumentsModel();
 
-    // agregar el instrumento
-    $id = $model->addInstrument([
-      'InstrumentName' => $data->InstrumentName
+    // Agregar el instrumento
+    $result = $model->addInstrument([
+      'InstrumentName' => $data['InstrumentName']
     ]);
 
-    // retornar la respuesta
-    return $this->response->setJSON([
-      'status' => 'success',
-      'message' => 'Instrument added',
-      'id' => $id
-    ]);
+    // Retornar la respuesta usando formatResponse
+    return $this->formatResponse($result, 'Instrument added successfully', 'Error adding instrument');
   }
 
   public function deleteInstrument()
   {
-    // obtener la data enviada
-    $data = $this->request->getJSON();
+    // Obtener la data enviada
+    $data = $this->request->getJSON(true); // true lo convierte en array asociativo
 
-    // validar la data
-    if (!$data) {
-      return $this->response->setJSON([
-        'status' => 'error',
-        'message' => 'Invalid data'
-      ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-    }
-
-    // si hay un campo vacio return error
-    if (empty($data->InstrumentID)) {
-      return $this->response->setJSON([
-        'status' => 'error',
-        'message' => 'Empty fields'
-      ])->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST);
-    }
-
-    // cargar el modelo
+    // Cargar el modelo
     $model = new InstrumentsModel();
 
-    // eliminar el instrumento
-    $affectedRows = $model->deleteInstrument($data->InstrumentID);
+    // Eliminar el instrumento
+    $result = $model->deleteInstrument($data['InstrumentID']);
 
-    if(isset($affectedRows['error'])){
-      return $this->response->setJSON([
-        'status' => 'error',
-        'message' => "No se pudo eliminar el instrumento, debe estar asociado a un profesor o a un estudiante"
-      ])->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    // retornar la respuesta
-    return $this->response->setJSON([
-      'status' => 'success',
-      'message' => 'Instrument deleted',
-      'affectedRows' => $affectedRows
-    ]);
+    // Retornar la respuesta usando formatResponse
+    return $this->formatResponse($result, 'Instrument deleted successfully', 'Error deleting instrument. It may be associated with a professor or student.');
   }
-  
 }

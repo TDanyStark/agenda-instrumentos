@@ -8,20 +8,19 @@ class CoursesModel extends Model
 {
     public function getCourses()
     {
-        $query = $this->db->query('SELECT * FROM courses ORDER BY ClassDuration DESC');
-        $result = $query->getResult();
-        return $result;
+        $query = 'SELECT * FROM courses ORDER BY ClassDuration DESC';
+        return $this->executeQuery($query); // Siempre retorna el resultado, el controlador maneja el error
     }
 
     public function addCourse($data)
     {
-        $query = $this->db->query('INSERT INTO courses (CourseName, 	ClassDuration) VALUES (?, ?)', [$data['CourseName'], $data['ClassDuration']]);
-        return $this->db->insertID();
+        $query = 'INSERT INTO courses (CourseName, ClassDuration) VALUES (?, ?)';
+        return $this->executeQuery($query, [$data['CourseName'], $data['ClassDuration']]); // Siempre retorna el resultado
     }
 
     public function deleteCourse($id)
     {
-        $query = $this->db->query('DELETE FROM courses WHERE CourseID = ?', [$id]);
-        return $this->db->affectedRows();
+        $query = 'DELETE FROM courses WHERE CourseID = ?';
+        return $this->executeQuery($query, [$id]); // Siempre retorna el resultado
     }
 }
