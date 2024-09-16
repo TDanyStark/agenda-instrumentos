@@ -8,33 +8,33 @@ class ProfessorsModel extends Model
 {
     public function getProfessors()
     {
-        $query = 'SELECT * FROM professors';
+        $query = 'SELECT * FROM professors ORDER BY ProfessorID DESC';
         return $this->executeQuery($query); // Siempre retorna el resultado
     }
 
     public function getProfessorForEdit($id)
     {
         $professorQuery = 'SELECT * FROM professors WHERE ProfessorID = ?';
-        $professorRoomsQuery = '
-            SELECT pr.RoomID, r.RoomName 
-            FROM professorrooms pr
-            JOIN rooms r ON pr.RoomID = r.RoomID
-            WHERE pr.ProfessorID = ?';
-        $professorInstrumentsQuery = '
-            SELECT pi.InstrumentID, i.InstrumentName 
-            FROM professorinstrument pi
-            JOIN instruments i ON pi.InstrumentID = i.InstrumentID
-            WHERE pi.ProfessorID = ?';
-        $professorAvailabilityQuery = '
-            SELECT * 
-            FROM professoravailability 
-            WHERE ProfessorID = ? 
-            ORDER BY DayOfWeek ASC, StartTime ASC';
 
-        $professor = $this->executeQuery($professorQuery, [$id], true);
-        $professorRooms = $this->executeQuery($professorRoomsQuery, [$id], true);
-        $professorInstruments = $this->executeQuery($professorInstrumentsQuery, [$id], true);
-        $professorAvailability = $this->executeQuery($professorAvailabilityQuery, [$id], true);
+        $professorRoomsQuery = 'SELECT pr.RoomID, r.RoomName 
+                                FROM professorrooms pr
+                                JOIN rooms r ON pr.RoomID = r.RoomID
+                                WHERE pr.ProfessorID = ?';
+
+        $professorInstrumentsQuery = 'SELECT pi.InstrumentID, i.InstrumentName 
+                                        FROM professorinstrument pi
+                                        JOIN instruments i ON pi.InstrumentID = i.InstrumentID
+                                        WHERE pi.ProfessorID = ?';
+
+        $professorAvailabilityQuery = 'SELECT * 
+                                        FROM professoravailability 
+                                        WHERE ProfessorID = ? 
+                                        ORDER BY DayOfWeek ASC, StartTime ASC';
+
+        $professor = $this->executeQuery($professorQuery, [$id]);
+        $professorRooms = $this->executeQuery($professorRoomsQuery, [$id]);
+        $professorInstruments = $this->executeQuery($professorInstrumentsQuery, [$id]);
+        $professorAvailability = $this->executeQuery($professorAvailabilityQuery, [$id]);
 
         return [
             "data" => [

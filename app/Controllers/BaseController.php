@@ -59,9 +59,7 @@ abstract class BaseController extends Controller
     protected function formatResponse($result, $successMessage = '', $errorMessage = 'Ocurrió un error')
     {
         if (isset($result['status']) && $result['status'] === 'error') {
-
             $message = '';
-
             if (isset($result['errorCode'])) {
                 switch ($result['errorCode']) {
                     case 1062:
@@ -75,7 +73,6 @@ abstract class BaseController extends Controller
                         break;
                 }
             }
-
 
             return $this->response->setJSON([
                 'status' => 'error',

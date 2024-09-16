@@ -25,7 +25,7 @@ class InstrumentsController extends BaseController
         // Pasar los instrumentos a la vista si no hay errores
         $data = [
             'title' => 'Instrumentos',
-            'instruments' => $result['data']->getResult() // Pasar los instrumentos si todo está bien
+            'instruments' => $result['data'] // Pasar los instrumentos si todo está bien
         ];
 
         return view('template/header', $data)

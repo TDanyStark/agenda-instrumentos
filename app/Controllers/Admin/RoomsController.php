@@ -25,7 +25,7 @@ class RoomsController extends BaseController
         // Si no hay errores, pasar los salones a la vista
         $data = [
             'title' => 'Salones',
-            'rooms' => $result['data']->getResult() // Pasar los salones si todo está bien
+            'rooms' => $result['data'] // Pasar los salones si todo está bien
         ];
 
         return view('template/header', $data)

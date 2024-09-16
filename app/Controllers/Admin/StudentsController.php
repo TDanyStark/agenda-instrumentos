@@ -25,7 +25,7 @@ class StudentsController extends BaseController
         // Si no hay errores, pasar los estudiantes a la vista
         $data = [
             'title' => 'Estudiantes',
-            'students' => $result['data']->getResult() // Pasar los estudiantes si todo está bien
+            'students' => $result['data'] // Pasar los estudiantes si todo está bien
         ];
 
         return view('template/header', $data)

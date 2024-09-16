@@ -21,33 +21,27 @@ class ProfessorsController extends BaseController
         // Obtener los profesores
         $professorsResult = $professorsModel->getProfessors();
         if (isset($professorsResult['status']) && $professorsResult['status'] === 'error') {
-            return view('template/header', ['title' => 'Error'])
-                . view('errors/custom_error', ['message' => $professorsResult['error']])
-                . view('template/footer');
+            return "error";
         }
 
         // Obtener los salones
         $roomsResult = $roomsModel->getRooms();
         if (isset($roomsResult['status']) && $roomsResult['status'] === 'error') {
-            return view('template/header', ['title' => 'Error'])
-                . view('errors/custom_error', ['message' => $roomsResult['error']])
-                . view('template/footer');
+            return "error";
         }
 
         // Obtener los instrumentos
         $instrumentsResult = $instrumentModel->getInstruments();
         if (isset($instrumentsResult['status']) && $instrumentsResult['status'] === 'error') {
-            return view('template/header', ['title' => 'Error'])
-                . view('errors/custom_error', ['message' => $instrumentsResult['error']])
-                . view('template/footer');
+            return "error";
         }
 
         // Si no hay errores, pasar los datos a la vista
         $data = [
             'title' => 'Profesores',
-            'professors' => $professorsResult['data']->getResult(), // Pasar los profesores
-            'rooms' => $roomsResult['data']->getResult(),           // Pasar los salones
-            'instruments' => $instrumentsResult['data']->getResult(), // Pasar los instrumentos
+            'professors' => $professorsResult['data'], // Pasar los profesores
+            'rooms' => $roomsResult['data'],           // Pasar los salones
+            'instruments' => $instrumentsResult['data'], // Pasar los instrumentos
             'modal' => $modal,                         // Pasar el parámetro 'modal'
         ];
 

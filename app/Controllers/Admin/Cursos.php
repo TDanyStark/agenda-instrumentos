@@ -14,6 +14,7 @@ class Cursos extends BaseController
 
         // Obtener los cursos utilizando el método getCourses
         $result = $model->getCourses();
+        
 
         // Verificar si hay un error en la respuesta
         if (isset($result['status']) && $result['status'] === 'error') {
@@ -26,7 +27,7 @@ class Cursos extends BaseController
         // Pasar los cursos a la vista si no hay errores
         $data = [
             'title' => 'Cursos',
-            'cursos' => $result['data']->getResult()
+            'cursos' => $result['data']
         ];
 
         return view('template/header', $data)

@@ -8,7 +8,7 @@ class StudentsModel extends Model
 {
     public function getStudents()
     {
-        $query = 'SELECT * FROM students';
+        $query = 'SELECT * FROM students ORDER BY StudentID DESC';
         return $this->executeQuery($query); // Siempre retorna el resultado, el controlador maneja el error
     }
 

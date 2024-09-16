@@ -22,7 +22,7 @@ class CoursesController extends BaseController
         ]);
 
         // Retornar la respuesta usando formatResponse
-        return $this->formatResponse($result, 'Course added successfully', 'Error adding course');
+        return $this->formatResponse($result, 'Curso agregado satisfactoriamente', 'Error agregando el curso');
     }
 
     public function deleteCourse()
@@ -37,6 +37,6 @@ class CoursesController extends BaseController
         $result = $model->deleteCourse($data['CourseID']);
 
         // Retornar la respuesta usando formatResponse
-        return $this->formatResponse($result, 'Course deleted successfully', 'Error deleting course');
+        return $this->formatResponse($result, 'Curso eliminado correctamente', 'Error eliminando el curso');
     }
 }

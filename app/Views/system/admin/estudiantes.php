@@ -36,43 +36,43 @@
         </tr>
       </thead>
       <tbody>
-          <?php foreach ($students as $student) : ?>
-            <tr class="bg-white dark:bg-gray-800">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?= $student->Status == 1 ? 'bg-green-100' : 'bg-red-100' ?> <?= $student->Status == 1 ? 'text-green-800' : 'text-red-800' ?>">
-                  <?= $student->Status == 1 ? 'Activo' : 'Inactivo' ?>
-                </span>
-              </td>
+        <?php foreach ($students as $student) : ?>
+          <tr class="bg-white dark:bg-gray-800">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <?= $student->Status == 1 ? 'bg-green-100' : 'bg-red-100' ?> <?= $student->Status == 1 ? 'text-green-800' : 'text-red-800' ?>">
+                <?= $student->Status == 1 ? 'Activo' : 'Inactivo' ?>
+              </span>
+            </td>
 
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<?= $student->FirstName ?>&background=random&color=fff" alt="">
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                      <?= $student->FirstName ?>
-                    </div>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<?= $student->FirstName ?>&background=random&color=fff" alt="">
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    <?= $student->FirstName ?>
                   </div>
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 dark:text-white"><?= $student->LastName ?></div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 dark:text-white"><?= $student->Cedula ?></div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 dark:text-white"><?= $student->Email ?></div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex gap-4">
-                  <button class="btn-edit-student text-indigo-400 hover:text-indigo-600" data-studentid="<?= $student->StudentID ?>">Editar</button>
-                  <button class="btn-delete-student text-red-600 hover:text-red-900" data-studentid="<?= $student->StudentID ?>">Eliminar</button>
-                </div>
-              </td>
-            </tr>
-          <?php endforeach; ?>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white"><?= $student->LastName ?></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white"><?= $student->Cedula ?></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white"><?= $student->Email ?></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex gap-4">
+                <button class="btn-edit-student text-indigo-400 hover:text-indigo-600" data-studentid="<?= $student->StudentID ?>">Editar</button>
+                <button class="btn-delete-student text-red-600 hover:text-red-900" data-studentid="<?= $student->StudentID ?>">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
       </tbody>
     </table>
   </div>
@@ -128,164 +128,181 @@
 </section>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const newStudent = document.getElementById('newStudent');
-  const closeModal = document.getElementById('closeModal');
-  const btnCancelar = document.getElementById('btn-cancelar');
-  const modalAdd = document.getElementById('modal-add');
+  document.addEventListener("DOMContentLoaded", function() {
+    const newStudent = document.getElementById('newStudent');
+    const closeModal = document.getElementById('closeModal');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const modalAdd = document.getElementById('modal-add');
 
-  let table = new DataTable('#tablaEstudiantes', {
-    responsive: true,
-  });
+    let table = new DataTable('#tablaEstudiantes', {
+      responsive: true,
+      order: []
+    });
 
-  let formData = {
-    StudentID: '',
-    modo: '',
-    firstName: '',
-    lastName: '',
-    cedula: '',
-    email: '',
-    status: 1
-  };
+    let formData = {
+      StudentID: '',
+      modo: '',
+      firstName: '',
+      lastName: '',
+      cedula: '',
+      email: '',
+      status: 1
+    };
 
-  let copyFormData = JSON.parse(JSON.stringify(formData))
+    let copyFormData = JSON.parse(JSON.stringify(formData))
 
-  const changeModalState = () => {
-    modalAdd.classList.toggle('flex');
-    modalAdd.classList.toggle('hidden');
-  }
-
-  newStudent.addEventListener('click', () => {
-    formData = JSON.parse(JSON.stringify(copyFormData))
-    formData.modo = 'add';
-    renderFormData();
-    changeModalState();
-  });
-
-  closeModal.addEventListener('click', changeModalState);
-
-  btnCancelar.addEventListener('click', changeModalState);
-
-  const renderFormData = () => {
-    console.log(formData);
-    renderFields();
-  }
-
-  // Campos del formulario
-  const $firstName = document.getElementById('firstName');
-  const $lastName = document.getElementById('lastName');
-  const $cedula = document.getElementById('cedula');
-  const $email = document.getElementById('email');
-  const $status = document.getElementById('status');
-
-  $firstName.addEventListener('input', function() {
-    formData.firstName = $firstName.value;
-  });
-
-  $lastName.addEventListener('input', function() {
-    formData.lastName = $lastName.value;
-  });
-
-  $cedula.addEventListener('input', function() {
-    formData.cedula = $cedula.value;
-  });
-
-  $email.addEventListener('input', function() {
-    formData.email = $email.value;
-  });
-
-  $status.addEventListener('change', function() {
-    formData.status = $status.checked ? 1 : 0;
-  });
-
-  const renderFields = () => {
-    $firstName.value = formData.firstName;
-    $lastName.value = formData.lastName;
-    $cedula.value = formData.cedula;
-    $email.value = formData.email;
-    $status.checked = formData.status === 1;
-  }
-
-  const btnEnviar = document.getElementById('btn-editar');
-  btnEnviar.addEventListener('click', () => {
-    console.log(formData);
-    // Validar que todos los campos obligatorios estén llenos
-    let errores = [];
-    if (formData.firstName === '') {
-      errores.push('El campo Nombre es obligatorio');
-    }
-    if (formData.lastName === '') {
-      errores.push('El campo Apellido es obligatorio');
-    }
-    if (formData.cedula === '') {
-      errores.push('El campo Cédula es obligatorio');
-    }
-    if (formData.email === '') {
-      errores.push('El campo Email es obligatorio');
+    const changeModalState = () => {
+      modalAdd.classList.toggle('flex');
+      modalAdd.classList.toggle('hidden');
     }
 
-    if (errores.length > 0) {
-      Swal.fire({
-        title: 'Error',
-        html: errores.join('<br>'),
-        icon: 'error',
-        showConfirmButton: true,
-      });
-      return;
+    newStudent.addEventListener('click', () => {
+      cleanFormData();
+      formData.modo = 'add';
+      renderFormData();
+      changeModalState();
+    });
+
+    closeModal.addEventListener('click', changeModalState);
+
+    btnCancelar.addEventListener('click', changeModalState);
+
+    const renderFormData = () => {
+      renderFields();
     }
 
-    const urlApi = formData.modo === 'add' ? '<?= base_url('api/add-student') ?>' : '<?= base_url('api/update-student') ?>';
+    function cleanFormData() {
+      formData = JSON.parse(JSON.stringify(copyFormData));
+      // renderFormData();
+    }
 
-    fetch(urlApi, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      }).then(response => response.json())
-      .then(data => {
-        let mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
-        let mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
-        if (data.status === 'success') {
-          Swal.fire({
-            title: `Estudiante ${mensajeModo}`,
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 1000
-          }).then(() => {
-            window.location.reload();
-          });
-        } else {
-          Swal.fire({
-            title: `Error al ${mensajeModoError} estudiante`,
-            text: data.message,
-            icon: 'error',
-            showConfirmButton: true,
-          });
+    // Campos del formulario
+    const $firstName = document.getElementById('firstName');
+    const $lastName = document.getElementById('lastName');
+    const $cedula = document.getElementById('cedula');
+    const $email = document.getElementById('email');
+    const $status = document.getElementById('status');
+
+    $firstName.addEventListener('input', function() {
+      formData.firstName = $firstName.value;
+    });
+
+    $lastName.addEventListener('input', function() {
+      formData.lastName = $lastName.value;
+    });
+
+    $cedula.addEventListener('input', function() {
+      formData.cedula = $cedula.value;
+    });
+
+    $email.addEventListener('input', function() {
+      formData.email = $email.value;
+    });
+
+    $status.addEventListener('change', function() {
+      formData.status = $status.checked ? 1 : 0;
+    });
+
+    const renderFields = () => {
+      $firstName.value = formData.firstName;
+      $lastName.value = formData.lastName;
+      $cedula.value = formData.cedula;
+      $email.value = formData.email;
+      $status.checked = formData.status === 1;
+    }
+
+    const btnEnviar = document.getElementById('btn-editar');
+    btnEnviar.addEventListener('click', async () => {
+      try {
+        console.log(formData);
+
+        // Validar que todos los campos obligatorios estén llenos
+        let errores = [];
+        if (formData.firstName === '') {
+          errores.push('El campo Nombre es obligatorio');
         }
-      })
-      .catch(error => {
+        if (formData.lastName === '') {
+          errores.push('El campo Apellido es obligatorio');
+        }
+        if (formData.cedula === '') {
+          errores.push('El campo Cédula es obligatorio');
+        }
+        if (formData.email === '') {
+          errores.push('El campo Email es obligatorio');
+        }
+
+        // Si hay errores, lanzamos una excepción para manejarlos en el catch
+        if (errores.length > 0) {
+          throw new Error(errores.join('<br>'));
+        }
+
+        const urlApi = formData.modo === 'add' ? '<?= base_url('api/add-student') ?>' : '<?= base_url('api/update-student') ?>';
+
+        const response = await fetch(urlApi, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        // Verificar si la respuesta es correcta
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al obtener los datos del estudiante');
+        }
+
+        const data = await response.json();
+
+        // Verificar si la operación fue exitosa
+        if (data.status !== 'success') {
+          throw new Error(data.message || 'Error desconocido al procesar estudiante');
+        }
+
+        const mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
+
+        // Mostrar éxito si todo fue bien
+        await Swal.fire({
+          title: `Estudiante ${mensajeModo}`,
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1000
+        });
+        window.location.reload();
+
+      } catch (error) {
         console.error('Error:', error);
-      });
 
-  });
+        // Manejar todos los errores (validaciones o del servidor) en el catch
+        await Swal.fire({
+          title: 'Error',
+          html: error.message,
+          icon: 'error',
+          showConfirmButton: true,
+        });
+      }
+    });
 
-  const btnsDeleteStudents = document.querySelectorAll('.btn-delete-student');
-  btnsDeleteStudents.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const StudentID = btn.dataset.studentid;
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esto!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrarlo!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          fetch('<?= base_url('api/delete-student') ?>', {
+
+    const btnsDeleteStudents = document.querySelectorAll('.btn-delete-student');
+    btnsDeleteStudents.forEach(btn => {
+      btn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        const StudentID = btn.dataset.studentid;
+
+        try {
+          const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, borrarlo!'
+          });
+
+          if (result.isConfirmed) {
+            const response = await fetch('<?= base_url('api/delete-student') ?>', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -293,77 +310,94 @@ document.addEventListener("DOMContentLoaded", function() {
               body: JSON.stringify({
                 StudentID
               })
-            }).then(response => response.json())
-            .then(data => {
-              if (data.status === 'success') {
-                Swal.fire({
-                  title: 'Estudiante eliminado',
-                  icon: 'success',
-                  showConfirmButton: false,
-                  timer: 1500
-                }).then(() => {
-                  window.location.reload();
-                });
-              } else {
-                console.log(data);
-                Swal.fire({
-                  title: 'Error al eliminar estudiante',
-                  text: data.message,
-                  icon: 'error',
-                  showConfirmButton: true,
-                });
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
             });
+
+            // Verificar si la respuesta es correcta
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Error al eliminar el estudiante');
+            }
+
+            const data = await response.json();
+
+            // Verificar si la operación fue exitosa
+            if (data.status !== 'success') {
+              throw new Error(data.message || 'Error desconocido al eliminar el estudiante');
+            }
+
+            // Mostrar éxito si todo fue bien
+            await Swal.fire({
+              title: 'Estudiante eliminado',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500
+            });
+
+            window.location.reload();
+          }
+
+        } catch (error) {
+          console.error('Error:', error);
+
+          // Manejar todos los errores (validaciones o del servidor) en el catch
+          await Swal.fire({
+            title: 'Error al eliminar estudiante',
+            text: error.message,
+            icon: 'error',
+            showConfirmButton: true,
+          });
         }
       });
     });
-  });
 
-  const btnsEditStudents = document.querySelectorAll('.btn-edit-student');
-  btnsEditStudents.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const StudentID = btn.dataset.studentid;
-      fetch('<?= base_url('api/get-student') ?>', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            StudentID
+
+    const btnsEditStudents = document.querySelectorAll('.btn-edit-student');
+    btnsEditStudents.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const StudentID = btn.dataset.studentid;
+        fetch('<?= base_url('api/get-student') ?>', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              StudentID
+            })
+          }).then(response => response.json())
+          .then(data => {
+            console.log(data);
+            const {
+              FirstName,
+              LastName,
+              Cedula,
+              Email,
+              Status
+            } = data.data[0];
+
+            formData.modo = 'edit';
+            formData.StudentID = StudentID;
+            formData.firstName = FirstName;
+            formData.lastName = LastName;
+            formData.cedula = Cedula;
+            formData.email = Email;
+            formData.status = parseInt(Status);
+
+            renderFormData();
+            changeModalState();
           })
-        }).then(response => response.json())
-        .then(data => {
-
-          const {
-            FirstName,
-            LastName,
-            Cedula,
-            Email,
-            Status
-          } = data.studentData.student;
-
-          formData.modo = 'edit';
-          formData.StudentID = StudentID;
-          formData.firstName = FirstName;
-          formData.lastName = LastName;
-          formData.cedula = Cedula;
-          formData.email = Email;
-          formData.status = parseInt(Status);
-
-          renderFormData();
-          changeModalState();
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
+          .catch(error => {
+            Swal.fire({
+              title: 'Error al obtener datos del estudiante',
+              text: error,
+              icon: 'error',
+              showConfirmButton: true,
+            });
+          });
+      });
     });
-  });
 
-});
+  });
 </script>
 
 <?= $this->endSection() ?>

@@ -140,6 +140,7 @@
 
     let table = new DataTable('#tablaProfesores', {
       responsive: true,
+      order: []
     });
 
     let formData = {
@@ -193,7 +194,6 @@
         }
       ]
     };
-
     let copyFormData = JSON.parse(JSON.stringify(formData))
 
     const changeModalState = () => {
@@ -205,8 +205,9 @@
       changeModalState();
     <?php endif; ?>
 
+
     newProfessor.addEventListener('click', () => {
-      formData = JSON.parse(JSON.stringify(copyFormData))
+      cleanFormData();
       formData.modo = 'add';
       renderFormData();
       changeModalState();
@@ -630,13 +631,18 @@
       contenedor.appendChild(divSelector);
     }
 
+    function cleanFormData() {
+      formData = JSON.parse(JSON.stringify(copyFormData));
+      // renderFormData();
+    }
+
 
     // Llamamos a la función para renderizar los horarios inicialmente
     renderHorarios();
 
 
     const btnEnviar = document.getElementById('btn-editar');
-    btnEnviar.addEventListener('click', () => {
+    btnEnviar.addEventListener('click', async () => {
       console.log(formData);
       // validar que todos los campos esten llenos
       let errores = [];
@@ -683,49 +689,66 @@
         return;
       }
 
-      const urlApi = formData.modo === 'add' ? '<?= base_url('api/add-professor') ?>' : '<?= base_url('api/update-professor') ?>';
+      const urlApi = formData.modo === 'add' ?
+        '<?= base_url('api/add-professor') ?>' :
+        '<?= base_url('api/update-professor') ?>';
 
-      fetch(urlApi, {
+      try {
+        const response = await fetch(urlApi, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(formData)
-        }).then(response => response.json())
-        .then(data => {
-          let mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
-          let mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
-          if (data.status === 'success') {
-            Swal.fire({
-              title: `Profesor ${mensajeModo}`,
-              icon: 'success',
-              showConfirmButton: false,
-              timer: 1000
-            }).then(() => {
-              window.location.reload();
-            });
-          } else {
-            console.log(data);
-            Swal.fire({
-              title: `Error al ${mensajeModoError} profesor`,
-              text: data.message,
-              icon: 'error',
-              showConfirmButton: true,
-            });
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
         });
 
+        // Verificar si la respuesta es correcta
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al obtener datos del profesor');
+        }
+
+        const result = await response.json();
+
+        // Manejar el resultado devuelto por el servidor
+        if (result.status !== 'success') {
+          throw new Error(`Error: ${result.message}, Código de error: ${result.errorCode || 'N/A'}`);
+        }
+
+        const mensajeModo = formData.modo === 'add' ? 'agregado' : 'editado';
+
+        // Mostrar mensaje de éxito
+        Swal.fire({
+          title: `Profesor ${mensajeModo}`,
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1000
+        }).then(() => {
+          window.location.reload();
+        });
+
+      } catch (error) {
+        console.error('Error:', error);
+
+        const mensajeModoError = formData.modo === 'add' ? 'agregar' : 'editar';
+
+        // Mostrar mensaje de error
+        Swal.fire({
+          title: `Error al ${mensajeModoError} profesor`,
+          text: error.message,
+          icon: 'error',
+          showConfirmButton: true,
+        });
+      }
     });
 
     const btnsDeleteProfessors = document.querySelectorAll('.btn-delete-professor');
     btnsDeleteProfessors.forEach(btn => {
-      btn.addEventListener('click', function(e) {
+      btn.addEventListener('click', async function(e) {
         e.stopPropagation();
         const professorId = btn.dataset.professorid;
-        Swal.fire({
+
+        const result = await Swal.fire({
           title: '¿Estás seguro?',
           text: "¡No podrás revertir esto!",
           icon: 'warning',
@@ -733,51 +756,65 @@
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Sí, borrarlo!'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch('<?= base_url('api/delete-professor') ?>', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  professorId
-                })
-              }).then(response => response.json())
-              .then(data => {
-                if (data.status === 'success') {
-                  Swal.fire({
-                    title: 'Profesor eliminado',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(() => {
-                    window.location.reload();
-                  });
-                } else {
-                  console.log(data);
-                  Swal.fire({
-                    title: 'Error al eliminar profesor',
-                    text: data.message,
-                    icon: 'error',
-                    showConfirmButton: true,
-                  });
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-              });
-          }
         });
+
+        if (result.isConfirmed) {
+          try {
+            const response = await fetch('<?= base_url('api/delete-professor') ?>', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                professorId
+              })
+            });
+
+            // Verificar si la respuesta es correcta
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Error al eliminar el profesor');
+            }
+
+            const result = await response.json();
+
+            // Verificar si la operación fue exitosa
+            if (result.status !== 'success') {
+              throw new Error(result.message || 'Error desconocido al eliminar profesor');
+            }
+
+            // Mostrar éxito si todo fue bien
+            await Swal.fire({
+              title: 'Profesor eliminado',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            window.location.reload();
+
+          } catch (error) {
+            console.error('Error:', error);
+
+            await Swal.fire({
+              title: 'Error',
+              text: error.message,
+              icon: 'error',
+              showConfirmButton: true,
+            });
+          }
+        }
       });
     });
 
     const btnsEditProfessors = document.querySelectorAll('.btn-edit-professor');
     btnsEditProfessors.forEach(btn => {
-      btn.addEventListener('click', function(e) {
+      btn.addEventListener('click', async function(e) {
         e.stopPropagation();
+        cleanFormData();
         const professorId = btn.dataset.professorid;
-        fetch('<?= base_url('api/get-professor') ?>', {
+
+        try {
+          const response = await fetch('<?= base_url('api/get-professor') ?>', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -785,68 +822,113 @@
             body: JSON.stringify({
               professorId
             })
-          }).then(response => response.json())
-          .then(data => {
-            console.log(data);
-            const {
-              Name,
-              Email
-            } = data.data.professor.data[0];
-
-            const professorRooms = data.data.professorRooms.data;
-            const professorInstruments = data.data.professorInstruments.data;
-            const professorAvailability = data.data.professorAvailability.data;
-
-            formData.modo = 'edit';
-            formData.professorId = professorId;
-            formData.name = Name;
-            formData.email = Email;
-
-            formData.salones = professorRooms.map(room => {
-              return {
-                roomId: room.RoomID,
-                roomName: room.RoomName
-              };
-            });
-
-            formData.instrumentos = professorInstruments.map(instrument => {
-              return {
-                instrumentId: instrument.InstrumentID,
-                instrumentName: instrument.InstrumentName
-              };
-            });
-
-            professorAvailability.forEach(availability => {
-              const dia = formData.agenda.find(d => d.diaName.toLowerCase() === availability.DayOfWeek.toLowerCase());
-
-              if (dia) {
-                dia.activo = true;
-
-                const startTimeFormatted = availability.StartTime.split(':').slice(0, 2).join(':');
-                const endTimeFormatted = availability.EndTime.split(':').slice(0, 2).join(':');
-
-                // Eliminar horarios vacíos solo si es el primer horario agregado
-                if (dia.horarios.length === 0 || (dia.horarios.length === 1 && dia.horarios[0].inicio === '' && dia.horarios[0].fin === '')) {
-                  dia.horarios = [];
-                }
-
-                dia.horarios.push({
-                  inicio: startTimeFormatted,
-                  fin: endTimeFormatted
-                });
-              } else {
-                console.warn('No se encontró el día');
-              }
-            });
-
-            renderFormData();
-            changeModalState();
-          })
-          .catch(error => {
-            console.error('Error:', error);
           });
+
+          if (!response.ok) {
+            const errorData = await response.json(); // Intentamos obtener el mensaje del error desde el servidor
+            throw new Error(errorData.message || 'Error al obtener datos del profesor');
+          }
+
+          const result = await response.json();
+
+          if (result.status === 'error') {
+            throw new Error(`Error: ${result.message}, Código de error: ${result.errorCode || 'N/A'}`);
+          }
+
+          // Continuar si la respuesta es de éxito
+          const {
+            data: {
+              professor: {
+                data: professorData
+              },
+              professorRooms: {
+                data: rooms
+              },
+              professorInstruments: {
+                data: instruments
+              },
+              professorAvailability: {
+                data: availability
+              }
+            }
+          } = result;
+
+          const {
+            Name,
+            Email
+          } = professorData[0];
+
+          formData.modo = 'edit';
+          formData.professorId = professorId;
+          formData.name = Name;
+          formData.email = Email;
+
+          formData.salones = rooms.map(({
+            RoomID,
+            RoomName
+          }) => ({
+            roomId: RoomID,
+            roomName: RoomName
+          }));
+
+          formData.instrumentos = instruments.map(({
+            InstrumentID,
+            InstrumentName
+          }) => ({
+            instrumentId: InstrumentID,
+            instrumentName: InstrumentName
+          }));
+
+          updateAvailability(formData.agenda, availability);
+
+          renderFormData();
+          changeModalState();
+
+        } catch (error) {
+          Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al obtener los datos del profesor',
+            icon: 'error',
+            showConfirmButton: true,
+          });
+        }
       });
     });
+
+    // Función auxiliar para manejar la disponibilidad
+    function updateAvailability(agenda, availability) {
+      availability.forEach(({
+        DayOfWeek,
+        StartTime,
+        EndTime
+      }) => {
+        const day = agenda.find(d => d.diaName.toLowerCase() === DayOfWeek.toLowerCase());
+
+        if (day) {
+          day.activo = true;
+
+          const startTimeFormatted = formatTime(StartTime);
+          const endTimeFormatted = formatTime(EndTime);
+
+          // Eliminar horarios vacíos solo si es el primer horario agregado
+          if (day.horarios.length === 0 || (day.horarios.length === 1 && day.horarios[0].inicio === '' && day.horarios[0].fin === '')) {
+            day.horarios = [];
+          }
+
+          day.horarios.push({
+            inicio: startTimeFormatted,
+            fin: endTimeFormatted
+          });
+        } else {
+          console.warn('No se encontró el día');
+        }
+      });
+    }
+
+    // Formatea el tiempo en formato 'HH:MM'
+    function formatTime(time) {
+      return time.split(':').slice(0, 2).join(':');
+    }
 
   });
 </script>
