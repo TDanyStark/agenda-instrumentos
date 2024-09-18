@@ -13,11 +13,14 @@
       <?php if (session()->get("role") == "admin"): ?>
         <ul class="space-y-6 secciones">
           <li><a href="/inicio" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Inicio">Inicio</a></li>
+          <li><a href="/matriculas" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Matriculas">Matriculas</a></li>
           <li><a href="/estudiantes" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Estudiantes">Estudiantes</a></li>
           <li><a href="/profesores" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Profesores">Profesores</a></li>
           <li><a href="/instrumentos" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Instrumentos">Instrumentos</a></li>
           <li><a href="/salones" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Salones">Salones</a></li>
           <li><a href="/cursos" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Cursos">Cursos</a></li>
+          <li><a href="/semestres" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Semestres">Semestres</a></li>
+
         </ul>
       <?php elseif( session()->get("role") == "student"): ?>
         <ul class="space-y-6 secciones">
@@ -40,7 +43,6 @@
         Salir
       </span>
     </a>
-
   </section>
 </aside>
 

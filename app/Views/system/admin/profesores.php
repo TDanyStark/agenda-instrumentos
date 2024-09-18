@@ -26,7 +26,7 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-gray-900 dark:text-white">
         <?php foreach ($professors as $professor) : ?>
           <tr class="bg-white dark:bg-gray-800">
             <td class="px-6 py-4 whitespace-nowrap">
@@ -35,14 +35,14 @@
                   <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<?= $professor->Name ?>&background=random&color=fff" alt="">
                 </div>
                 <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  <div class="text-sm font-medium ">
                     <?= $professor->Name ?>
                   </div>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900 dark:text-white"><?= $professor->Email ?></div>
+              <div class="text-sm "><?= $professor->Email ?></div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex gap-4">

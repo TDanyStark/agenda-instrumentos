@@ -56,10 +56,10 @@ abstract class BaseController extends Controller
         // E.g.: $this->session = \Config\Services::session();
     }
 
-    protected function formatResponse($result, $successMessage = '', $errorMessage = 'Ocurrió un error')
+    protected function formatResponse(array $result, string $successMessage = '', string $errorMessage = 'Ocurrió un error'): ResponseInterface
     {
         if (isset($result['status']) && $result['status'] === 'error') {
-            $message = '';
+            $message = $errorMessage;
             if (isset($result['errorCode'])) {
                 switch ($result['errorCode']) {
                     case 1062:
@@ -68,16 +68,13 @@ abstract class BaseController extends Controller
                     case 1451:
                         $message = 'El registro está asociado a otros registros y no puede ser eliminado';
                         break;
-                    default:
-                        $message = $errorMessage;
-                        break;
                 }
             }
 
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => $message,
-                'errorCode' => $result['errorCode'] ?? null
+                'errorCode' => isset($result['errorCode']) ? $result['errorCode'] : null
             ])->setStatusCode(400);
         }
 

@@ -16,17 +16,22 @@ $routes->get('/logout', 'Login::logout');
 $routes->group('', ['filter' => 'AuthFilter'], static function ($routes) {
   $routes->get('inicio', 'System\Inicio::index');
 
-  $routes->get('cursos', 'Admin\Cursos::index');
+  $routes->get('cursos', 'Admin\CoursesController::index');
   $routes->get('salones', 'Admin\RoomsController::index');
   $routes->get('profesores', 'Admin\ProfessorsController::index');
   $routes->get('estudiantes', 'Admin\StudentsController::index');
   $routes->get('instrumentos', 'Admin\InstrumentsController::index');
+  $routes->get('matriculas', 'Admin\EnrollsController::index');
+  $routes->get('semestres', 'Admin\SemestersController::index');
 });
 
 // api
 $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthApiFilter'], static function ($routes) {
   $routes->post('add-course', 'CoursesController::addCourse');
   $routes->post('delete-course', 'CoursesController::deleteCourse');
+
+  $routes->post('add-semester', 'SemestersController::addSemester');
+  $routes->post('delete-semester', 'SemestersController::deleteSemester');
 
   $routes->post('add-room', 'RoomsController::addRoom');
   $routes->post('delete-room', 'RoomsController::deleteRoom');
@@ -43,5 +48,12 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthAp
   $routes->post('delete-student', 'StudentsController::deleteStudent');
   $routes->post('get-student', 'StudentsController::getStudentForEdit');
   $routes->post('update-student', 'StudentsController::updateStudent');
+
+  $routes->post('add-enroll', 'EnrollsController::addEnroll');
+  $routes->post('delete-enroll', 'EnrollsController::deleteEnroll');
+  $routes->post('get-enroll', 'EnrollsController::getEnrollForEdit');
+  $routes->post('update-enroll', 'EnrollsController::updateEnroll');
+
+  $routes->get('search/(:segment)', 'SearchController::index/$1');
 
 });

@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CoursesModel;
 
-class Cursos extends BaseController
+class CoursesController extends BaseController
 {
     public function index()
     {

@@ -28,6 +28,9 @@
             Cédula
           </th>
           <th scope="col" class="px-6 py-3">
+            Celular
+          </th>
+          <th scope="col" class="px-6 py-3">
             Email
           </th>
           <th scope="col" class="px-6 py-3">
@@ -61,6 +64,9 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900 dark:text-white"><?= $student->Cedula ?></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white"><?= $student->Phone ?></div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-900 dark:text-white"><?= $student->Email ?></div>
@@ -108,6 +114,10 @@
             <input type="text" id="cedula" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
           </div>
           <div class="mb-5">
+            <label for="phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Celular</label>
+            <input type="phone" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+          </div>
+          <div class="mb-5">
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
             <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
           </div>
@@ -146,6 +156,7 @@
       lastName: '',
       cedula: '',
       email: '',
+      phone: '',
       status: 1
     };
 
@@ -181,6 +192,7 @@
     const $lastName = document.getElementById('lastName');
     const $cedula = document.getElementById('cedula');
     const $email = document.getElementById('email');
+    const $phone = document.getElementById('phone');
     const $status = document.getElementById('status');
 
     $firstName.addEventListener('input', function() {
@@ -199,6 +211,10 @@
       formData.email = $email.value;
     });
 
+    $phone.addEventListener('input', function() {
+      formData.phone = $phone.value;
+    });
+
     $status.addEventListener('change', function() {
       formData.status = $status.checked ? 1 : 0;
     });
@@ -208,6 +224,7 @@
       $lastName.value = formData.lastName;
       $cedula.value = formData.cedula;
       $email.value = formData.email;
+      $phone.value = formData.phone;
       $status.checked = formData.status === 1;
     }
 
@@ -353,10 +370,14 @@
 
     const btnsEditStudents = document.querySelectorAll('.btn-edit-student');
     btnsEditStudents.forEach(btn => {
-      btn.addEventListener('click', function(e) {
+      btn.addEventListener('click', async function(e) {
         e.stopPropagation();
-        const StudentID = btn.dataset.studentid;
-        fetch('<?= base_url('api/get-student') ?>', {
+
+        try {
+          const StudentID = btn.dataset.studentid;
+
+          // Realiza la solicitud fetch utilizando async/await dentro de try
+          const response = await fetch('<?= base_url('api/get-student') ?>', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -364,38 +385,52 @@
             body: JSON.stringify({
               StudentID
             })
-          }).then(response => response.json())
-          .then(data => {
-            console.log(data);
-            const {
-              FirstName,
-              LastName,
-              Cedula,
-              Email,
-              Status
-            } = data.data[0];
-
-            formData.modo = 'edit';
-            formData.StudentID = StudentID;
-            formData.firstName = FirstName;
-            formData.lastName = LastName;
-            formData.cedula = Cedula;
-            formData.email = Email;
-            formData.status = parseInt(Status);
-
-            renderFormData();
-            changeModalState();
-          })
-          .catch(error => {
-            Swal.fire({
-              title: 'Error al obtener datos del estudiante',
-              text: error,
-              icon: 'error',
-              showConfirmButton: true,
-            });
           });
+
+          // Si la respuesta no es correcta, arroja un error
+          if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+          }
+
+          // Parsear los datos
+          const result = await response.json();
+
+          // Extraer datos del estudiante
+          const {
+            FirstName,
+            LastName,
+            Cedula,
+            Phone,
+            Email,
+            Status
+          } = result.data[0];
+
+          // Asignar los valores a formData
+          formData.modo = 'edit';
+          formData.StudentID = StudentID;
+          formData.firstName = FirstName;
+          formData.lastName = LastName;
+          formData.cedula = Cedula;
+          formData.phone = Phone;
+          formData.email = Email;
+          formData.status = parseInt(Status);
+
+          // Renderizar los datos en el formulario y cambiar el estado del modal
+          renderFormData();
+          changeModalState();
+
+        } catch (error) {
+          // Manejo de errores
+          Swal.fire({
+            title: 'Error al obtener datos del estudiante',
+            text: error.message,
+            icon: 'error',
+            showConfirmButton: true,
+          });
+        }
       });
     });
+
 
   });
 </script>

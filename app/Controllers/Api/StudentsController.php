@@ -17,7 +17,8 @@ class StudentsController extends BaseController
             'lastName' => $json['lastName'],
             'cedula' => $json['cedula'],
             'status' => $json['status'],
-            'email' => $json['email']
+            'email' => $json['email'],
+            'phone' => $json['phone']
         ]);
 
         return $this->formatResponse($result, 'Estudiante agregado exitosamente', 'Error al agregar el estudiante');
@@ -54,7 +55,8 @@ class StudentsController extends BaseController
             'lastName' => $json['lastName'],
             'cedula' => $json['cedula'],
             'status' => $json['status'],
-            'email' => $json['email']
+            'email' => $json['email'],
+            'phone' => $json['phone']
         ]);
 
         return $this->formatResponse($result, 'Estudiante actualizado exitosamente', 'Error al actualizar el estudiante');

@@ -2,11 +2,11 @@
 
 <?= $this->section('content') ?>
 <section class="flex flex-col gap-8 w-full">
-	<h1 class="text-white text-6xl font-bold">Salones</h1>
+	<h1 class="text-white text-6xl font-bold">Semestres</h1>
 
 	<div class="flex justify-end">
 		<button data-modal-target="default-modal" data-modal-toggle="default-modal" id="openModal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-			Agregar nuevo salón
+			Agregar nuevo semestre
 		</button>
 	</div>
 
@@ -15,20 +15,22 @@
 			<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 				<tr>
 					<th scope="col" class="px-6 py-3">ID</th>
-					<th scope="col" class="px-6 py-3">Salón</th>
-					<th scope="col" class="px-6 py-3">AC</th>
+					<th scope="col" class="px-6 py-3">Semestre</th>
+					<th scope="col" class="px-6 py-3">Acciones</th>
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ($rooms as $room) : ?>
-					<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-						<th scope="row" class="px-6 py-4"><?= $room->RoomID ?></th>
-						<td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= $room->RoomName ?></td>
-						<td class="px-6 py-4">
-							<button class="btn-delete text-red-600 hover:text-red-900" data-roomid="<?= $room->RoomID ?>">Eliminar</button>
-						</td>
-					</tr>
-				<?php endforeach; ?>
+        <?php foreach ($semesters as $semester) : ?>
+          <tr class="bg-white dark:bg-gray-800">
+            <td class="px-6 py-4"><?= $semester->SemesterID ?></td>
+            <td class="px-6 py-4"><?= $semester->SemesterName ?></td>
+            <td class="px-6 py-4">
+              <button data-semesterid="<?= $semester->SemesterID ?>" class="btn-delete text-red-600 hover:text-red-900" type="button">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        <?php endforeach; ?>
 			</tbody>
 		</table>
 	</div>
@@ -40,7 +42,7 @@
 			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
 				<!-- Modal header -->
 				<div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-					<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Agregar salón</h3>
+					<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Agregar semestre</h3>
 					<button type="button" id="closeModal" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
 						<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
@@ -51,7 +53,7 @@
 				<!-- Modal body -->
 				<section class="p-4 md:p-8">
 					<div class="mb-5">
-						<label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre salón</label>
+						<label for="nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Semestre</label>
 						<input type="text" id="nombre" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
 					</div>
 				</section>
@@ -73,8 +75,8 @@
 	const $nombre = document.getElementById('nombre');
 
 	let formData = {
-		RoomID: '',
-		RoomName: ''
+		SemesterID: '',
+		SemesterName: ''
 	};
 
 	const changeModalState = () => {
@@ -83,7 +85,7 @@
 	};
 
 	openModal.addEventListener('click', () => {
-		formData.RoomName = '';
+		formData.SemesterName = '';
 		renderFields();
 		changeModalState();
 	});
@@ -92,21 +94,21 @@
 	btnCancelar.addEventListener('click', changeModalState);
 
 	$nombre.addEventListener('input', () => {
-		formData.RoomName = $nombre.value;
+		formData.SemesterName = $nombre.value;
 	});
 
 	const renderFields = () => {
-		$nombre.value = formData.RoomName;
+		$nombre.value = formData.SemesterName;
 	};
 
 	const btnGuardar = document.getElementById('btn-guardar');
 	btnGuardar.addEventListener('click', async () => {
 		try {
-			if (formData.RoomName.trim() === '') {
+			if (formData.SemesterName.trim() === '') {
 				throw new Error('El campo nombre es requerido');
 			}
 
-			const response = await fetch('<?= base_url('api/add-room') ?>', {
+			const response = await fetch('<?= base_url('api/add-semester') ?>', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -116,11 +118,11 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Error al agregar el salón');
+				throw new Error(errorData.message || 'Error al agregar el semestre');
 			}
 
 			await Swal.fire({
-				title: 'Salón agregado',
+				title: 'Semestre agregado',
 				icon: 'success',
 				showConfirmButton: false,
 				timer: 1500
@@ -140,7 +142,7 @@
 	const btnsDelete = document.querySelectorAll('.btn-delete');
 	btnsDelete.forEach(btn => {
 		btn.addEventListener('click', async function() {
-			const id = this.dataset.roomid;
+			const id = this.dataset.semesterid;
 			try {
 				const result = await Swal.fire({
 					title: '¿Estás seguro?',
@@ -154,23 +156,23 @@
 
 				if (!result.isConfirmed) return;
 
-				const response = await fetch('<?= base_url('api/delete-room') ?>', {
+				const response = await fetch('<?= base_url('api/delete-semester') ?>', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						RoomID: id
+						SemesterID: id
 					})
 				});
 
 				if (!response.ok) {
 					const errorData = await response.json();
-					throw new Error(errorData.message || 'Error al eliminar el salón');
+					throw new Error(errorData.message || 'Error al eliminar el semestre');
 				}
 
 				await Swal.fire({
-					title: 'Salón eliminado',
+					title: 'Semestre eliminado',
 					icon: 'success',
 					showConfirmButton: false,
 					timer: 1500
