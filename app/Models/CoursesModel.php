@@ -14,8 +14,8 @@ class CoursesModel extends Model
 
     public function addCourse($data)
     {
-        $query = 'INSERT INTO courses (CourseName, ClassDuration) VALUES (?, ?)';
-        return $this->executeQuery($query, [$data['CourseName'], $data['ClassDuration']]); // Siempre retorna el resultado
+        $query = 'INSERT INTO courses (CourseName, ClassDuration, CourseAvailableDays	) VALUES (?, ?, ?)';
+        return $this->executeQuery($query, [$data['CourseName'], $data['ClassDuration'], $data['CourseAvailableDays']]);
     }
 
     public function deleteCourse($id)

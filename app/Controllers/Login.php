@@ -34,12 +34,14 @@ class Login extends BaseController
 
 		// instance model
 		$model = new LoginModel();
+		$isStudent = false;
 
 		if (!isset($password)) {
 			$isAdmin = $model->validateAdmin($cedula);
 
 			if (!$isAdmin) {
 				$response = $model->authStudent($cedula);
+				$isStudent = true;
 			}else{
 				return redirect()->back()->withInput()->with('show_password_input', true);
 			}
@@ -57,6 +59,10 @@ class Login extends BaseController
 		$session->set('cedula', $response['cedula']);
 		$session->set('role', $response['role']);
 
+		if ($isStudent) {
+			$session->set('StudentID', $response['StudentID ']);
+		}
+
 		// set cookie
 		setcookie('test', 'hola wero todo bien?', time() + 7200, '/', '', false, true);
 
@@ -65,7 +71,7 @@ class Login extends BaseController
 			return redirect()->to('/inicio');
 		}
 
-		return redirect()->to('/select_shedule');
+		return redirect()->to('/horarios');
 	}
 
 	public function logout()

@@ -14,11 +14,14 @@ class CoursesController extends BaseController
 
         // Cargar el modelo
         $model = new CoursesModel();
+        
+        $AvailableDays = json_encode($data['CourseAvailableDays']);
 
         // Agregar el curso
         $result = $model->addCourse([
             'CourseName' => $data['CourseName'],
-            'ClassDuration' => $data['ClassDuration']
+            'ClassDuration' => $data['ClassDuration'],
+            'CourseAvailableDays' => $AvailableDays,
         ]);
 
         // Retornar la respuesta usando formatResponse

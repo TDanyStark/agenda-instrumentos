@@ -28,6 +28,9 @@
             Semestre
           </th>
           <th scope="col" class="px-6 py-3">
+            ¿Con horario?
+          </th>
+          <th scope="col" class="px-6 py-3">
             Acciones
           </th>
         </tr>
@@ -36,7 +39,16 @@
         <?php foreach ($enrollments as $enrollment) : ?>
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">
-              <?= $enrollment->StudentName ?>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=<?= $enrollment->StudentName ?>&background=random&color=fff" alt="">
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium ">
+                    <?= $enrollment->StudentName ?>
+                  </div>
+                </div>
+              </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <?= $enrollment->CourseName ?>
@@ -44,13 +56,16 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <?= $enrollment->InstrumentName ?>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap text-center">
               <?= $enrollment->SemesterName ?>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <?= $enrollment->ScheduleID !== null ? "✅" : "❌" ?>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex gap-4">
-                <button class="btn-edit-enrollment text-indigo-400 hover:text-indigo-600" data-enrollmentid="<?= $enrollment->EnrollmentID ?>">Editar</button>
-                <button class="btn-delete-enrollment text-red-600 hover:text-red-900" data-enrollmentid="<?= $enrollment->EnrollmentID ?>">Eliminar</button>
+                <button class="btn-edit-enrollment text-indigo-400 hover:text-indigo-600" data-enrollmentid="<?= $enrollment->EnrollID ?>">Editar</button>
+                <button class="btn-delete-enrollment text-red-600 hover:text-red-900" data-enrollmentid="<?= $enrollment->EnrollID ?>">Eliminar</button>
               </div>
             </td>
           </tr>
@@ -143,6 +158,11 @@
     const semesterSelect = document.getElementById('semesterSelect');
 
     const statusCheckbox = document.getElementById('status');
+
+    let table = new DataTable('#tablaMatriculas', {
+      responsive: true,
+      order: []
+    });
 
     let formData = {
       enrollId: '',

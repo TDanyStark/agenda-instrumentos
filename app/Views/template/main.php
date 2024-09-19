@@ -1,4 +1,3 @@
-
 <aside id="aside" class="bg-gray-100 w-64 min-w-64 min-h-screen flex flex-col justify-between p-4 md:p-8">
   <div class="space-y-10">
     <section class="flex justify-between">
@@ -22,10 +21,9 @@
           <li><a href="/semestres" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Semestres">Semestres</a></li>
 
         </ul>
-      <?php elseif( session()->get("role") == "student"): ?>
+      <?php elseif (session()->get("role") == "student"): ?>
         <ul class="space-y-6 secciones">
-          <li><a href="#" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Seleccionar">Seleccionar</a></li>
-          <li><a href="#" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Ver">Ver</a></li>
+          <li><a href="/horarios" class="prevsalto px-4 py-2 hover:bg-primary hover:text-white hover:font-semibold rounded-xl" data-text="Horarios">Horarios</a></li>
         </ul>
       <?php endif; ?>
     </section>
@@ -47,34 +45,43 @@
 </aside>
 
 <script>
-  const menuHamburguer = document.getElementById('menu-hamburguer');
-  const aside = document.getElementById('aside');
-  const onlyfull = document.querySelectorAll('.onlyfull');
-  const links = document.querySelectorAll('.secciones a');
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuHamburguer = document.getElementById('menu-hamburguer');
+    const aside = document.getElementById('aside');
+    const onlyfull = document.querySelectorAll('.onlyfull');
+    const links = document.querySelectorAll('.secciones a');
 
-  menuHamburguer.addEventListener('click', () => {
-    mobileview();
-  });
+  
 
-  const mobileview = () => {
-    aside.classList.toggle('w-64');
-    aside.classList.toggle('min-w-64');
-    aside.classList.toggle('min-h-screen');
-    onlyfull.forEach(link => {
-      link.classList.toggle('hidden');
-    });
-  }
-
-  // detectar la url y colocar el active segun el data-text
-  let url = window.location.pathname;
-  url = url.split('/')[1];
-  links.forEach(link => {
-    if (link.getAttribute('data-text').toLowerCase() == url) {
-      link.classList.add('active');
+    const mobileview = () => {
+      aside.classList.toggle('w-64');
+      aside.classList.toggle('min-w-64');
+      aside.classList.toggle('min-h-screen');
+      onlyfull.forEach(link => {
+        link.classList.toggle('hidden');
+      });
     }
+
+    menuHamburguer.addEventListener('click', () => {
+      mobileview();
+    });
+
+    // si el ancho de la pantalla es menor a 768px
+    if (window.innerWidth < 768) {
+      mobileview();
+    }
+
+    // detectar la url y colocar el active segun el data-text
+    let url = window.location.pathname;
+    url = url.split('/')[1];
+    links.forEach(link => {
+      if (link.getAttribute('data-text').toLowerCase() == url) {
+        link.classList.add('active');
+      }
+    });
   });
 </script>
 
-<main class="p-4 md:pt-12 md:px-10 xl:min-w-[1200px] max-w-full mx-auto min-h-screen overflow-auto">
+<main class="p-4 md:pt-12 md:px-10 2xl:min-w-[1200px] max-w-full mx-auto min-h-screen overflow-auto">
   <?= $this->renderSection('content') ?>
 </main>

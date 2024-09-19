@@ -25,6 +25,12 @@ $routes->group('', ['filter' => 'AuthFilter'], static function ($routes) {
   $routes->get('semestres', 'Admin\SemestersController::index');
 });
 
+// group studenst
+$routes->group('', ['filter' => 'AuthStudentFilter'], static function ($routes) {
+  $routes->get('inicio-estudiante', 'Student\Inicio::index');
+  $routes->get('horarios', 'Student\SchedulesController::index');
+});
+
 // api
 $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthApiFilter'], static function ($routes) {
   $routes->post('add-course', 'CoursesController::addCourse');
@@ -55,5 +61,9 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthAp
   $routes->post('update-enroll', 'EnrollsController::updateEnroll');
 
   $routes->get('search/(:segment)', 'SearchController::index/$1');
+});
+
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], static function ($routes) {
+  $routes->post('student-schedule', 'ApiScheduleController::addSchedule');
 
 });

@@ -7,20 +7,25 @@ use CodeIgniter\Model;
 class EnrollsModel extends Model
 {
     public function getEnrolls(){
-        $query = 'SELECT 
-            e.EnrollID AS EnrollmentID,
+    $query = 'SELECT 
+            e.EnrollID AS EnrollID,
             CONCAT(s.FirstName, " ", s.LastName) AS StudentName,
             c.CourseName AS CourseName,
             i.InstrumentName AS InstrumentName,
             sm.SemesterName AS SemesterName,
-            e.Status AS Status
+            e.Status AS Status,
+            ss.ScheduleID AS ScheduleID
         FROM enrolls e
         JOIN students s ON e.StudentID = s.StudentID
         JOIN courses c ON e.CourseID = c.CourseID
         JOIN instruments i ON e.InstrumentID = i.InstrumentID
-        JOIN semesters sm ON e.SemesterID = sm.SemesterID';
-        return $this->executeQuery($query);
-    }
+        JOIN semesters sm ON e.SemesterID = sm.SemesterID
+        LEFT JOIN student_schedule ss ON e.EnrollID = ss.EnrollID
+        ORDER BY e.EnrollID DESC';
+    
+    return $this->executeQuery($query);
+}
+
 
     public function addEnroll($data){
         $query = 'INSERT INTO enrolls (StudentID, CourseID, InstrumentID, SemesterID, Status) VALUES (?, ?, ?, ?, ?)';
