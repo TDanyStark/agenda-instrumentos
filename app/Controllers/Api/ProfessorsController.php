@@ -125,6 +125,8 @@ class ProfessorsController extends BaseController
                 }
             }
         }
+
+        return [];
     }
 
     public function deleteProfessorMethods($json)

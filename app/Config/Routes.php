@@ -65,5 +65,6 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api', 'filter' => 'AuthAp
 
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function ($routes) {
   $routes->post('student-schedule', 'ApiScheduleController::addSchedule');
-
+  $routes->post('schedule/getAvailableSchedules', 'ApiScheduleController::getAvailableSchedules');
+  $routes->post('schedule/saveSchedule', 'ApiScheduleController::saveSchedule');
 });
