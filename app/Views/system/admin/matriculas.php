@@ -5,7 +5,10 @@
 
 <section class="flex flex-col gap-8 w-full">
   <h1 class="text-white text-6xl font-bold">Matrículas</h1>
-  <div class="flex justify-end">
+  <div class="flex justify-between">
+    <a href="<?= base_url("/crear-clase-grupal") ?>" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+      Crear clase grupal
+    </a>
     <button id="newEnrollment" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="button">
       Agregar nueva matrícula
     </button>
@@ -60,7 +63,7 @@
               <?= $enrollment->SemesterName ?>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-center">
-              <?= $enrollment->ScheduleID !== null ? "✅" : "❌" ?>
+              <button class="btnSchedule" data-scheduleid="<?= $enrollment->ScheduleID ?>"><?= $enrollment->ScheduleID !== null ? "✅" : "❌" ?></button>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex gap-4">
@@ -135,6 +138,31 @@
         <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
           <button id="btn-submit" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Guardar</button>
           <button id="btn-cancel" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Asegúrate de tener el modal-info-schedule en tu HTML -->
+  <div id="modal-info-schedule" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="hidden flex overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            Detalles del Horario
+          </h3>
+          <button id="close-modal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="static-modal">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div id="modal-body" class="p-4 md:p-5 space-y-4 text-gray-900 dark:text-white">
+          <!-- Los detalles del horario se inyectarán aquí -->
         </div>
       </div>
     </div>
@@ -280,6 +308,92 @@
       semesterSelect.value = formData.semesterId;
       statusCheckbox.checked = formData.status === 1;
     }
+
+    // Referencias al modal de información del horario
+    const modalInfoSchedule = document.getElementById('modal-info-schedule');
+    const closeModalInfo = document.getElementById('close-modal');
+    const modalBody = document.getElementById('modal-body');
+
+    // Función para mostrar el modal de información del horario
+    const showModalInfo = () => {
+      modalInfoSchedule.classList.remove('hidden');
+      modalInfoSchedule.classList.add('flex');
+    };
+
+    // Función para ocultar el modal de información del horario
+    const hideModalInfo = () => {
+      modalInfoSchedule.classList.remove('flex');
+      modalInfoSchedule.classList.add('hidden');
+      modalBody.innerHTML = ''; // Limpiar el contenido
+    };
+
+    // Evento para cerrar el modal
+    closeModalInfo.addEventListener('click', hideModalInfo);
+
+    // Funcionalidad para los botones de horario
+    const btnsSchedule = document.querySelectorAll('.btnSchedule');
+    btnsSchedule.forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const scheduleId = btn.dataset.scheduleid;
+
+        if (scheduleId) {
+          try {
+            // Mostrar un indicador de carga (opcional)
+            modalBody.innerHTML = '<p>Cargando...</p>';
+            showModalInfo();
+
+            // Realizar la solicitud para obtener los detalles del horario
+            const response = await fetch(`<?= base_url('api/get-schedule') ?>/${scheduleId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error('Error al obtener los detalles del horario');
+            }
+
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+              throw new Error(result.message || 'Error desconocido al obtener detalles del horario');
+            }
+
+            const data = result.data;
+
+            // Formatear los detalles del horario
+            const horarioHTML = `
+              <p><strong>Día:</strong> ${data.DayOfWeek}</p>
+              <p><strong>Hora Inicio:</strong> ${data.StartTime.slice(0, 5)}</p>
+              <p><strong>Hora Fin:</strong> ${data.EndTime.slice(0, 5)}</p>
+              <p><strong>Profesor:</strong> ${data.Name}</p>
+              <p><strong>Salón:</strong> ${data.RoomName}</p>
+              <p><strong>Creado el:</strong> ${data.CreatedAt}</p>
+            `;
+
+            // Inyectar los detalles en el modal
+            modalBody.innerHTML = horarioHTML;
+
+          } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+              title: 'Error',
+              text: error.message,
+              icon: 'error',
+              showConfirmButton: true,
+            });
+          }
+        } else {
+          Swal.fire({
+            title: 'Sin horario',
+            text: 'Esta matrícula no tiene horario asignado',
+            icon: 'info',
+            showConfirmButton: true,
+          });
+        }
+      });
+    });
 
     btnSubmit.addEventListener('click', async () => {
       // Validate form data

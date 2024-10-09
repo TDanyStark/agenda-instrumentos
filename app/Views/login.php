@@ -1,7 +1,7 @@
 <section class="bg-gray-50 dark:bg-gray-900 w-full h-screen flex items-center justify-center">
     <div class="flex flex-col items-center justify-center px-6 py-8 w-full max-w-md">
         <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-            <img class="w-32 h-auto mr-2" src="<?= base_url() ?>img/logos/Logo-CanZion-Heather.webp" alt="logo">
+            <img class="w-32 h-auto mr-2" src="<?= base_url() ?>img/logos/maslogo.webp" alt="logo">
         </a>
         <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
             <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -49,7 +49,7 @@
     // close alert
     const btnClose = document.getElementById('btn-close');
     const alert = document.getElementById('alert');
-    btnClose.addEventListener('click', () => {
+    btnClose?.addEventListener('click', () => {
         alert.remove();
     });
 

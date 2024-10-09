@@ -22,6 +22,9 @@
             Email
           </th>
           <th scope="col" class="px-6 py-3">
+            Instrumento(s)
+          </th>
+          <th scope="col" class="px-6 py-3">
             AC
           </th>
         </tr>
@@ -44,6 +47,10 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm "><?= $professor->Email ?></div>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm ">
+                <span class="bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white px-2 py-1 rounded-lg"><?= $professor->instruments ?></span>
+              </div>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <div class="flex gap-4">
                 <button class="btn-edit-professor text-indigo-400 hover:text-indigo-600" data-professorid="<?= $professor->ProfessorID ?>">Editar</button>
@@ -545,8 +552,8 @@
             viewBox="0 0 512 512"
             width="23"
             xml:space="preserve"
-            xmlns="http:www.w3.org/2000/svg"
-            xmlns:xlink="http:www.w3.org/1999/xlink"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
           >
             <g>
               <path
@@ -568,6 +575,44 @@
       return horarioDiv;
     }
 
+    // Definición de variables según las instrucciones del usuario
+    let recurrencia = parseInt("<?php echo $recurrencia ?>");
+    let horaInicioGeneral = "<?php echo $horaInicio ?>"; // Por ejemplo, "08:00"
+    let horaInicioSemana = "14:00"; // 2:00 PM en formato 24 horas
+    let horaFinSabado = "15:00"; // 3:00 PM en formato 24 horas
+    let horaFinGeneral = "<?php echo $horaFin ?>";
+
+    function generarHoras(recurrencia, horaInicio, horaFin) {
+      // Función auxiliar para convertir "HH:MM" a minutos totales
+      function tiempoAMinutos(tiempo) {
+        const [horas, minutos] = tiempo.split(':').map(Number);
+        return horas * 60 + minutos;
+      }
+
+      // Función auxiliar para convertir minutos totales a "HH:MM"
+      function minutosATiempo(minutosTotales) {
+        const horas = Math.floor(minutosTotales / 60);
+        const minutos = minutosTotales % 60;
+        // Añade un cero delante si es necesario
+        const horasStr = horas.toString().padStart(2, '0');
+        const minutosStr = minutos.toString().padStart(2, '0');
+        return `${horasStr}:${minutosStr}`;
+      }
+
+      const inicioMinutos = tiempoAMinutos(horaInicio);
+      const finMinutos = tiempoAMinutos(horaFin);
+      const intervalos = [];
+
+      for (let minuto = inicioMinutos; minuto <= finMinutos; minuto += recurrencia) {
+        // Asegura que no se exceda la hora de fin
+        if (minuto > finMinutos) break;
+        intervalos.push(minutosATiempo(minuto));
+      }
+
+      return intervalos;
+    }
+
+
 
     function crearSelectorHoras(contenedor, dia, horarioIndex, tipo) {
       const agendaDia = formData.agenda.find(d => d.diaName === dia);
@@ -580,13 +625,24 @@
         });
         return;
       }
-      const horas = [
-        "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
-        "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
-        "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-        "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
-        "21:00", "21:30", "22:00"
-      ];
+
+      // Determinar si el día es un día de la semana o sábado
+      const diasSemana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+      let horaInicio, horaFin;
+
+      if (diasSemana.includes(dia)) {
+        horaInicio = horaInicioSemana; // "14:00"
+        horaFin = horaFinGeneral;
+      } else if (dia === 'Sabado') {
+        horaInicio = horaInicioGeneral;
+        horaFin = horaFinSabado; // "15:00"
+      } else {
+        // Por defecto, usar los horarios generales si el día no está definido
+        horaInicio = horaInicioGeneral;
+        horaFin = horaFinGeneral;
+      }
+
+      const horas = generarHoras(recurrencia, horaInicio, horaFin);
 
       const divSelector = document.createElement('div');
       divSelector.className = 'select flex flex-col bg-slate-500 absolute overflow-y-scroll h-60 z-50 w-[110%] mb-10 shadow-md shadow-slate-800';
@@ -932,4 +988,5 @@
 
   });
 </script>
+
 <?= $this->endSection() ?>

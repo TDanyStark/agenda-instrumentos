@@ -8,7 +8,22 @@ class ProfessorsModel extends Model
 {
     public function getProfessors()
     {
-        $query = 'SELECT * FROM professors ORDER BY ProfessorID DESC';
+        $query = $query = 'SELECT 
+            professors.ProfessorID, 
+            professors.Name, 
+            professors.Email, 
+            GROUP_CONCAT(instruments.InstrumentName SEPARATOR ", ") AS instruments
+        FROM 
+            professors
+        LEFT JOIN 
+            professorinstrument ON professors.ProfessorID = professorinstrument.ProfessorID
+        LEFT JOIN 
+            instruments ON professorinstrument.InstrumentID = instruments.InstrumentID
+        GROUP BY 
+            professors.ProfessorID
+        ORDER BY 
+            professors.ProfessorID DESC
+    ';
         return $this->executeQuery($query); // Siempre retorna el resultado
     }
 
@@ -102,5 +117,10 @@ class ProfessorsModel extends Model
     {
         $query = 'DELETE FROM professoravailability WHERE ProfessorID = ?';
         return $this->executeQuery($query, [$id]);
+    }
+
+    public function searchProfessors($search){
+        $query = "SELECT * FROM professors WHERE (Name LIKE ? OR Email LIKE ?)";
+        return $this->executeQuery($query, ["%$search%", "%$search%"]);
     }
 }

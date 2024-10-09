@@ -39,6 +39,7 @@ class SchedulesModel extends Model
             CONCAT(s.FirstName, " ", s.LastName) AS StudentName,
             c.CourseName AS CourseName,
             c.ClassDuration AS ClassDuration,
+            c.CourseAvailableDays AS CourseAvailableDays,
             c.CourseID AS CourseID,
             i.InstrumentID AS InstrumentID,
             i.InstrumentName AS InstrumentName,
@@ -67,11 +68,13 @@ class SchedulesModel extends Model
 
     public function getAvailableSchedules($data)
     {
-        $db = $this->db; // Usar la conexión inyectada
+        $db = $this->db;
 
         // Obtener el InstrumentID del array de datos
         $instrumentID = $data['InstrumentID'];
         $ClassDuration = $data['ClassDuration'];
+        $recurrencia = $data['recurrencia'];
+        $DaysAvailables = $data['DaysAvailables'];
 
         // Paso 1: Obtener los profesores que enseñan el instrumento dado
         $professors = $db->table('professorinstrument')
@@ -87,11 +90,20 @@ class SchedulesModel extends Model
         foreach ($professors as $professor) {
             $professorID = $professor['ProfessorID'];
 
-            // Obtener disponibilidad del profesor
-            $availability = $db->table('professoravailability')
-                ->where('ProfessorID', $professorID)
-                ->get()
-                ->getResultArray();
+            // Obtener disponibilidad del profesor, filtrando por $DaysAvailables si no está vacío
+            $availabilityQuery = $db->table('professoravailability')
+                ->where('ProfessorID', $professorID);
+
+            if (!empty($DaysAvailables) && is_array($DaysAvailables)) {
+                $availabilityQuery->whereIn('DayOfWeek', $DaysAvailables);
+            }
+    
+            $availability = $availabilityQuery->get()->getResultArray();
+
+            // Continuar si no hay disponibilidad para los días especificados
+            if (empty($availability)) {
+                continue;
+            }
 
             // Obtener las salas asociadas al profesor
             $rooms = $db->table('professorrooms')
@@ -131,51 +143,74 @@ class SchedulesModel extends Model
 
             // Paso 3: Calcular los horarios disponibles basados en la disponibilidad y horarios ocupados
             $professorAvailableSchedules = [];
-            $interval = new \DateInterval('PT30M'); // para que me de la hora de inicio cada 30 min
-            $classDuration = new \DateInterval('PT' . $ClassDuration . 'M'); // para que me ubique los bloques cada 30/60 min o el valor de $classDuration
+            $interval = new \DateInterval('PT' . $recurrencia . 'M'); // Intervalo de recurrencia
+            $classDurationInterval = new \DateInterval('PT' . $ClassDuration . 'M'); // Duración de la clase
 
             foreach ($availability as $avail) {
                 $dayOfWeek = $avail['DayOfWeek'];
-                $startTime = $avail['StartTime'];
-                $endTime = $avail['EndTime'];
+                $startTimeStr = $avail['StartTime'];
+                $endTimeStr = $avail['EndTime'];
+
+                // Crear objetos DateTime para inicio y fin de disponibilidad
+                $startTime = DateTime::createFromFormat('H:i:s', $startTimeStr);
+                $endTime = DateTime::createFromFormat('H:i:s', $endTimeStr);
+
+                if (!$startTime || !$endTime) {
+                    // Manejar errores de formato de tiempo si es necesario
+                    log_message('error', 'Error al convertir la hora de inicio o fin de la disponibilidad. error 2545687');
+                    continue;
+                }
 
                 // Crear intervalos de tiempo dentro de la disponibilidad
                 $periods = new DatePeriod(
-                    new DateTime($startTime),
+                    clone $startTime,
                     $interval,
-                    new DateTime($endTime)
+                    $endTime
                 );
 
                 // Para cada sala asignada al profesor
                 foreach ($rooms as $room) {
                     $roomID = $room['RoomID'];
 
-                    // Obtener horarios ocupados para esta sala y día
+                    // Filtrar horarios ocupados para esta sala y día
                     $overlappingRoomSchedules = array_filter($occupiedRoomSchedules, function ($occupied) use ($dayOfWeek, $roomID) {
                         return $occupied['DayOfWeek'] == $dayOfWeek && $occupied['RoomID'] == $roomID;
                     });
 
-                    // Obtener horarios ocupados del profesor para este día
+                    // Filtrar horarios ocupados del profesor para este día
                     $overlappingProfessorSchedules = array_filter($occupiedProfessorSchedules, function ($occupied) use ($dayOfWeek) {
                         return $occupied['DayOfWeek'] == $dayOfWeek;
                     });
 
+                    // Filtrar horarios ocupados del estudiante para este día
                     $overlappingStudentSchedules = array_filter($occupiedStudentSchedules, function ($occupied) use ($dayOfWeek) {
                         return $occupied['DayOfWeek'] == $dayOfWeek;
                     });
 
                     foreach ($periods as $periodStart) {
                         $periodEnd = clone $periodStart;
-                        // a la hora de inicio le sumamos la duracion de la clase para crear ese horario
-                        $periodEnd->add($classDuration);
+                        $periodEnd->add($classDurationInterval);
 
-                        $slotStart = $periodStart->format('H:i:s');
-                        $slotEnd = $periodEnd->format('H:i:s');
+                        // Asegurarse de que el período no exceda la disponibilidad
+                        if ($periodEnd > $endTime) {
+                            log_message('error', 'El período excede la disponibilidad. error 2545687');
+                            continue;
+                        }
+
+                        $slotStart = clone $periodStart;
+                        $slotEnd = clone $periodEnd;
 
                         // Verificar si este intervalo está ocupado en esta sala
                         $isRoomOccupied = false;
                         foreach ($overlappingRoomSchedules as $occupied) {
-                            if ($occupied['StartTime'] < $slotEnd && $slotStart < $occupied['EndTime']) {
+                            $occupiedStart = DateTime::createFromFormat('H:i:s', $occupied['StartTime']);
+                            $occupiedEnd = DateTime::createFromFormat('H:i:s', $occupied['EndTime']);
+
+                            if (!$occupiedStart || !$occupiedEnd) {
+                                continue;
+                            }
+
+                            if ($occupiedStart < $slotEnd && $slotStart < $occupiedEnd) {
                                 $isRoomOccupied = true;
                                 break;
                             }
@@ -184,15 +219,30 @@ class SchedulesModel extends Model
                         // Verificar si el profesor está ocupado en este intervalo
                         $isProfessorOccupied = false;
                         foreach ($overlappingProfessorSchedules as $occupied) {
-                            if ($occupied['StartTime'] < $slotEnd && $slotStart < $occupied['EndTime']) {
+                            $occupiedStart = DateTime::createFromFormat('H:i:s', $occupied['StartTime']);
+                            $occupiedEnd = DateTime::createFromFormat('H:i:s', $occupied['EndTime']);
+
+                            if (!$occupiedStart || !$occupiedEnd) {
+                                continue;
+                            }
+
+                            if ($occupiedStart < $slotEnd && $slotStart < $occupiedEnd) {
                                 $isProfessorOccupied = true;
                                 break;
                             }
                         }
 
+                        // Verificar si el estudiante está ocupado en este intervalo
                         $isStudentOccupied = false;
                         foreach ($overlappingStudentSchedules as $occupied) {
-                            if ($occupied['StartTime'] < $slotEnd && $slotStart < $occupied['EndTime']) {
+                            $occupiedStart = DateTime::createFromFormat('H:i:s', $occupied['StartTime']);
+                            $occupiedEnd = DateTime::createFromFormat('H:i:s', $occupied['EndTime']);
+
+                            if (!$occupiedStart || !$occupiedEnd) {
+                                continue;
+                            }
+
+                            if ($occupiedStart < $slotEnd && $slotStart < $occupiedEnd) {
                                 $isStudentOccupied = true;
                                 break;
                             }
@@ -202,8 +252,8 @@ class SchedulesModel extends Model
                             // Añadir el horario disponible con la información de la sala
                             $professorAvailableSchedules[] = [
                                 'DayOfWeek' => $dayOfWeek,
-                                'StartTime' => $slotStart,
-                                'EndTime' => $slotEnd,
+                                'StartTime' => $slotStart->format('H:i:s'),
+                                'EndTime' => $slotEnd->format('H:i:s'),
                                 'RoomID' => $roomID,
                                 'RoomName' => $room['RoomName'],
                             ];
@@ -226,7 +276,6 @@ class SchedulesModel extends Model
             'data' => $availableSchedules
         ];
     }
-
 
     public function saveSchedule($data)
     {
@@ -324,5 +373,13 @@ class SchedulesModel extends Model
                 'message' => $e->getMessage(),
             ];
         }
+    }
+
+    public function getSchedule($id){
+        return $this->select('student_schedule.*, professors.Name, rooms.RoomName')
+        ->join('professors', 'student_schedule.ProfessorID = professors.ProfessorID', 'left')
+        ->join('rooms', 'student_schedule.RoomID = rooms.RoomID', 'left')
+        ->where('student_schedule.ScheduleID', $id)
+        ->first();
     }
 }

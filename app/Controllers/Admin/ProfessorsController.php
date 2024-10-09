@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\InstrumentsModel;
 use App\Models\ProfessorsModel;
 use App\Models\RoomsModel;
+use App\Models\SettingsModel;
 
 class ProfessorsController extends BaseController
 {
@@ -14,6 +15,11 @@ class ProfessorsController extends BaseController
         $professorsModel = new ProfessorsModel();
         $instrumentModel = new InstrumentsModel();
         $roomsModel = new RoomsModel();
+        $settingsModel = new SettingsModel();
+
+        $recurrencia = $settingsModel->getSetting("recurrencia");
+        $horaInicio = $settingsModel->getSetting("hora_inicio_general");
+        $horaFin = $settingsModel->getSetting("hora_fin_general");
 
         // Parameter get
         $modal = $this->request->getGet('modal');
@@ -43,6 +49,9 @@ class ProfessorsController extends BaseController
             'rooms' => $roomsResult['data'],           // Pasar los salones
             'instruments' => $instrumentsResult['data'], // Pasar los instrumentos
             'modal' => $modal,                         // Pasar el parámetro 'modal'
+            'recurrencia' => $recurrencia,
+            'horaInicio' => $horaInicio,
+            'horaFin' => $horaFin,
         ];
 
         return view('template/header', $data)

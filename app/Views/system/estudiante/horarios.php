@@ -69,7 +69,7 @@
           </div>
           <?php if ($enroll->ScheduleID === null): ?>
             <div class="bg-gray-800 p-4 flex items-center justify-center">
-              <button class="py-2 px-4 w-full text-center bg-primary text-white rounded text-xl btn-select-schedule" data-instrumentid="<?= $enroll->InstrumentID ?>" data-classduration="<?= $enroll->ClassDuration ?>" data-enrollid="<?= $enroll->EnrollID ?>">Seleccionar Horario</button>
+              <button class="py-2 px-4 w-full text-center bg-primary text-white rounded text-xl btn-select-schedule" data-instrumentid="<?= $enroll->InstrumentID ?>" data-classduration="<?= $enroll->ClassDuration ?>" data-enrollid="<?= $enroll->EnrollID ?>" data-courseavailabledays='<?= implode(";", json_decode($enroll->CourseAvailableDays)) ?>'>Seleccionar Horario</button>
             </div>
           <?php endif ?>
         </div>
@@ -151,8 +151,9 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-
     let EnrollID = null;
+
+    let SelectedCard = null;
 
     function showSchedulePopup(data) {
       // Crear el elemento del popup
@@ -183,7 +184,7 @@
           daysSet.add(schedule.DayOfWeek);
         });
       });
-      const days = Array.from(daysSet);
+      let days = Array.from(daysSet);
 
       // Mostrar los días disponibles
       const daysContainer = popup.querySelector('.days-container');
@@ -291,11 +292,14 @@
       $btn.addEventListener('click', async (e) => {
 
         EnrollID = e.target.dataset.enrollid;
+        SelectedCard = e.target.dataset.courseavailabledays;
 
         const $data = {
           InstrumentID: e.target.dataset.instrumentid,
-          ClassDuration: e.target.dataset.classduration
+          ClassDuration: e.target.dataset.classduration,
+          DaysAvailables: e.target.dataset.courseavailabledays ? e.target.dataset.courseavailabledays.split(';') : []
         };
+
         console.log($data);
 
         const response = await fetch('<?= base_url('api/schedule/getAvailableSchedules') ?>', {
@@ -311,6 +315,10 @@
 
         if (result.status === 'success') {
           // Llamar a la función para mostrar el popup
+          if (result.data.length === 0) {
+            alert('No hay horarios disponibles para este curso, valide con el administrador');
+            return;
+          }
           showSchedulePopup(result.data);
         } else {
           // Manejar el error

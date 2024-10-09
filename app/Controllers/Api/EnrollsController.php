@@ -67,4 +67,6 @@ class EnrollsController extends BaseController
 
         return $this->formatResponse($result, 'Matrícula actualizada correctamente', 'Error actualizando la matrícula');
     }
+
+    
 }

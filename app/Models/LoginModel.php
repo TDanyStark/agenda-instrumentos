@@ -18,7 +18,7 @@ class LoginModel extends Model
 
         if ($result && $result->Status == 1) {
             return array(
-                "StudentID " => $result->StudentID,
+                "StudentID" => $result->StudentID,
                 "FirstName" => $result->FirstName,
                 "cedula" => $result->Cedula,
                 "email" => $result->Email,

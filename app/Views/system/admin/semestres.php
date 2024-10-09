@@ -14,7 +14,6 @@
 		<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
 			<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 				<tr>
-					<th scope="col" class="px-6 py-3">ID</th>
 					<th scope="col" class="px-6 py-3">Semestre</th>
 					<th scope="col" class="px-6 py-3">Acciones</th>
 				</tr>
@@ -22,7 +21,6 @@
 			<tbody>
         <?php foreach ($semesters as $semester) : ?>
           <tr class="bg-white dark:bg-gray-800">
-            <td class="px-6 py-4"><?= $semester->SemesterID ?></td>
             <td class="px-6 py-4"><?= $semester->SemesterName ?></td>
             <td class="px-6 py-4">
               <button data-semesterid="<?= $semester->SemesterID ?>" class="btn-delete text-red-600 hover:text-red-900" type="button">

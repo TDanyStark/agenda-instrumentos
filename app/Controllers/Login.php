@@ -3,11 +3,24 @@
 namespace App\Controllers;
 
 use App\Models\LoginModel;
+use App\Models\SettingsModel;
 
 class Login extends BaseController
 {
-	public function index(): string
+	public function index()
 	{
+		// validar si ya esta logeado y es admin
+		$session = session();
+		if ($session->get('role') == 'admin') {
+			return redirect()->to('/inicio');
+		}
+
+		// validar si es estudiante
+		if ($session->get('role') == 'student') {
+			return redirect()->to('/horarios');
+		}
+		
+
 		$data["title"] = "Login - Agendamiento CZ";
 
 		return view("template/header", $data)
@@ -34,14 +47,12 @@ class Login extends BaseController
 
 		// instance model
 		$model = new LoginModel();
-		$isStudent = false;
 
 		if (!isset($password)) {
 			$isAdmin = $model->validateAdmin($cedula);
 
 			if (!$isAdmin) {
 				$response = $model->authStudent($cedula);
-				$isStudent = true;
 			}else{
 				return redirect()->back()->withInput()->with('show_password_input', true);
 			}
@@ -53,24 +64,27 @@ class Login extends BaseController
 		if (!$response) {
 			return redirect()->back()->withInput()->with('error', 'Cedula, contraseña incorrecta o usuario inactivo, contacte administrador');
 		}
+
+		$modelSettings = new SettingsModel();
+		$canLogged = $modelSettings->getSetting("escoger_horario");
+
+		if ($canLogged == 1 && $response['role'] !== 'admin') {
+			return redirect()->back()->withInput()->with('error', 'El sistema se encuentra deshabilitado, contacte administrador');
+		}
+
 		
 		// set session
 		$session = session();
 		$session->set('cedula', $response['cedula']);
 		$session->set('role', $response['role']);
 
-		if ($isStudent) {
-			$session->set('StudentID', $response['StudentID ']);
-		}
-
-		// set cookie
-		setcookie('test', 'hola wero todo bien?', time() + 7200, '/', '', false, true);
-
 		// redirect to inicio si es admin
 		if ($response['role'] == 'admin') {
 			return redirect()->to('/inicio');
 		}
-
+		if ($response['role'] == 'student') {
+			$session->set('StudentID', $response['StudentID']);
+		}
 		return redirect()->to('/horarios');
 	}
 
